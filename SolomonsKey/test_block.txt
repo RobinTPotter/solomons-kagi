@@ -1,0 +1,34 @@
+
+glPushMatrix()
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+glutWireCube(1)
+
+glutSolidCube(0.8)
+
+for i in range(0,4):
+    glPushMatrix()
+    glRotate(i*90,0,1,0)
+    glTranslate(.46,0,0)
+    glScale(1,7,7)
+    glutSolidCube(0.1)
+    glPopMatrix()
+
+
+glPushMatrix()
+glRotate(1*90,0,0,1)
+glTranslate(.46,0,0)
+glScale(1,7,7)
+glutSolidCube(0.1)
+glPopMatrix()
+
+
+glPushMatrix()
+glRotate(3*90,0,0,1)
+glTranslate(.46,0,0)
+glScale(1,7,7)
+glutSolidCube(0.1)
+glPopMatrix()
+
+
+
+glPopMatrix()

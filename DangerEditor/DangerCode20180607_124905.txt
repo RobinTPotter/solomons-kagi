@@ -1,0 +1,10 @@
+glutSolidCube(0.5) ###size
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+q=gluNewQuadric()
+glTranslate(0.0,-0.7,0.0) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.5,12,12) ###size###Isegments###Istacks
+glTranslate(0.0,0.6,0.3) ###trans_x###trans_y###trans_z
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+glScale(0.4,0.3,0.4) ###scale_x###scale_y###scale_z
+glutSolidCone(0.5,0.5,12,1) ###radius###size###Isegs###Istacks
+

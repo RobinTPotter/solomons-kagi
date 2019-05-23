@@ -1,0 +1,16 @@
+q=gluNewQuadric()
+glScale(0.5,0.5,0.5) ###scale_x###scale_y###scale_z
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+glPushMatrix()
+glScale(1.5,1.0,1.0) ###scale_x###scale_y###scale_z
+glutSolidSphere(0.5,12,12) ###size###Isegments###Istacks
+glTranslate(0.5,0.5,0.0) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.3,12,12) ###size###Isegments###Istacks
+glTranslate(-0.9,-0.4,0.0) ###trans_x###trans_y###trans_z
+glRotate(-90.0,0,1,0) ###value###axis_x###axis_y###axis_z
+glutSolidCone(0.2,0.7,12,1) ###radius###size###Isegs###Istacks
+glTranslate(0.7,0.1,-0.4) ###trans_x###trans_y###trans_z
+glScale(1.4,0.3,1.1) ###scale_x###scale_y###scale_z
+glutSolidCube(0.5) ###size
+glPopMatrix()
+

@@ -1,0 +1,6 @@
+glLineWidth(3.0) ###width
+glBegin(GL_LINES)
+glVertex3f(1.00,0.00,0.00) ###NO###XXX###YYY###ZZZ
+glVertex3f(-1.00,0.00,0.00) ###NO###XXX###YYY###ZZZ
+glEnd()
+

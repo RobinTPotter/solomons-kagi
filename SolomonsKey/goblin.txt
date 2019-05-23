@@ -1,0 +1,71 @@
+#COMMENT /*         goblin         */
+#COMMENT /*         brown body         */
+glPushMatrix()
+glTranslate(0.0,-0.3,0.0) ###trans_x###trans_y###trans_z
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["brown"])
+glRotate(-90.0,1.0,0.0,0) ###value###axis_x###axis_y###axis_z
+q=gluNewQuadric()
+glutSolidCone(0.5,0.7,12,1) ###radius###size###Isegs###Istacks
+#COMMENT /*         green arms         */
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+#COMMENT /*         green arm 1         */
+glPushMatrix()
+glTranslate(0.0,0.3,0.5) ###trans_x###trans_y###trans_z
+glRotate(180.0,0,1,0.3) ###value###axis_x###axis_y###axis_z
+gluCylinder(q,0.1,0.2,0.5,6,1) ###xxx###yyy###zzz###Isub###Istack
+glutSolidSphere(0.1,12,12) ###size###Isegments###Istacks
+glTranslate(0.0,0.0,0.5) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.2,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+#COMMENT /*         green arm 2         */
+glPushMatrix()
+glTranslate(0.0,-0.3,0.5) ###trans_x###trans_y###trans_z
+glRotate(-180.0,0.0,1,-0.3) ###value###axis_x###axis_y###axis_z
+gluCylinder(q,0.1,0.2,0.5,6,1) ###xxx###yyy###zzz###Isub###Istack
+glutSolidSphere(0.1,12,12) ###size###Isegments###Istacks
+glTranslate(0.0,0.0,0.5) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.2,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+#COMMENT /*         green foot 1         */
+glPushMatrix()
+glScale(0.6,0.4,0.2) ###scale_x###scale_y###scale_z
+glTranslate(0.0,-0.5,-0.6) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.5,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+#COMMENT /*         green foot 2         */
+glPushMatrix()
+glScale(0.6,0.4,0.2) ###scale_x###scale_y###scale_z
+glTranslate(0.0,0.5,-0.6) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.5,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+#COMMENT /*         green head         */
+glPushMatrix()
+glTranslate(0.0,0.0,0.7) ###trans_x###trans_y###trans_z
+glScale(1.0,1.0,0.6) ###scale_x###scale_y###scale_z
+glutSolidSphere(0.3,12,12) ###size###Isegments###Istacks
+#COMMENT /*                  */
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
+#COMMENT /*         read eye 1         */
+glPushMatrix()
+glTranslate(0.28,0.12,0.0) ###trans_x###trans_y###trans_z
+glRotate(90.0,-0.4,1.0,0.0) ###value###axis_x###axis_y###axis_z
+glScale(0.6,0.3,0.7) ###scale_x###scale_y###scale_z
+glPushMatrix()
+glRotate(-16.0,1.0,0.0,0) ###value###axis_x###axis_y###axis_z
+glTranslate(0.0,0.5,0.07) ###trans_x###trans_y###trans_z
+gluDisk(q,0.05,0.2,12,12) ###xxx###yyy###Isegments###Istacks
+glPopMatrix()
+glPopMatrix()
+#COMMENT /*         read eye 2         */
+glPushMatrix()
+glTranslate(0.28,-0.12,0.0) ###trans_x###trans_y###trans_z
+glRotate(90.0,0.4,1.0,0.0) ###value###axis_x###axis_y###axis_z
+glScale(0.6,0.3,0.7) ###scale_x###scale_y###scale_z
+glPushMatrix()
+glRotate(16.0,1.0,0.0,0) ###value###axis_x###axis_y###axis_z
+glTranslate(0.0,-0.5,0.07) ###trans_x###trans_y###trans_z
+gluDisk(q,0.05,0.2,12,12) ###xxx###yyy###Isegments###Istacks
+glPopMatrix()
+glPopMatrix()
+glPopMatrix()
+glPopMatrix()

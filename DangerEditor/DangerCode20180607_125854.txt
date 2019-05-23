@@ -1,0 +1,20 @@
+glPushMatrix()
+glScale(1.7,1.0,1.0) ###scale_x###scale_y###scale_z
+glTranslate(2.0,0.0,0.0) ###trans_x###trans_y###trans_z
+glutSolidCube(0.5) ###size
+glPopMatrix()
+glPushMatrix()
+glScale(1.7,1.0,1.0) ###scale_x###scale_y###scale_z
+glTranslate(0.0,0.0,0.0) ###trans_x###trans_y###trans_z
+glutSolidCube(0.5) ###size
+glPopMatrix()
+glPushMatrix()
+glScale(1.7,1.0,1.0) ###scale_x###scale_y###scale_z
+glTranslate(-1.0,1.0,0.0) ###trans_x###trans_y###trans_z
+glutSolidCube(0.5) ###size
+glPopMatrix()
+glPushMatrix()
+glScale(1.7,1.0,1.0) ###scale_x###scale_y###scale_z
+glTranslate(1.0,1.0,0.0) ###trans_x###trans_y###trans_z
+glutSolidCube(0.5) ###size
+glPopMatrix()

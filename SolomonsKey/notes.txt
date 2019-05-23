@@ -1,0 +1,125 @@
+
+
+
+
+spectrum maps found
+15 across
+12 down
+
+
+http://maps.speccy.cz/map.php?id=SolomonsKey&sort=4&part=9&ath=
+http://www.lighthouse3d.com/tutorials/glut-tutorial/keyboard-example-moving-around-the-world/
+https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml
+https://www.opengl.org/documentation/specs/glut/glut-3.spec.pdf
+
+  git add .
+  git commit -m "solomon draft 3 finished"
+  git push
+
+. nothing
+g gemstone
+@ solomon start
+k key
+d door
+s solid block
+b breakable block
+1 bashing baddie
+2 fire
+3 bottle potion
+4 fairy bell
+6 baddy genertor
+7 Fizzing baddy goes along edges
+8 flying baddy no firing
+9 static fire spitter
+c Camel baddy?? fire ??
+
+
+
+        self.level=Level([
+            "..............."
+            ".......d......."
+            ".8............."
+            ".....sbbbs....."
+            ".....b343b....."
+            "..g..sbbbs..g.."
+            "......bbb......"
+            "...2.......2..."
+            "...sbs.1.sbs..."
+            "...b@bbbbbkb..."
+            "...sbs...sbs..."
+            "..............."])
+
+        self.level=Level([
+            "...............",
+            ".6.6...........",
+            ".......4.....k.",
+            ".ss.........bb.",
+            "...ss.....bb...",
+            ".....ss.bb.....",
+            "...............",
+            ".....bbbss.....",
+            ".@.bbbbbbbss.d.",
+            ".bb.........ss.",
+            "...............",
+            "..............."])
+
+        self.level=Level([
+            "s.....sss.....s",
+            "s.....bbb..74.s",
+            "s9....sbs..b..s",
+            "s..@..sss..7..s",
+            "sssssssssssssbs",
+            "sssss.....sss.s",
+            "sbbbb....dsbb.b",
+            "sbbss..c..sssbs",
+            "s5...sssssk..8s",
+            "sb...bbbbb....s",
+            "s..1.sb7bs....s",
+            "ssssssssss....s"])
+
+
+        self.level=Level([
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "..............."])
+
+
+        self.level=Level([
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "..............."])
+
+
+        self.level=Level([
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "...............",
+            "..............."])
+
+

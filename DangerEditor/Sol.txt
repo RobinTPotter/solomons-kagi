@@ -1,0 +1,39 @@
+q=gluNewQuadric()
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+glPushMatrix()
+glTranslate(0.0,-0.3,0.0) ###trans_x###trans_y###trans_z
+glRotate(-90.0,1.0,0.0,0) ###value###axis_x###axis_y###axis_z
+glutSolidCone(0.5,0.8,12,1) ###radius###size###Isegs###Istacks
+glPopMatrix()
+glPushMatrix()
+glTranslate(0.0,0.5,0.0) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.3,12,12) ###size###Isegments###Istacks
+glTranslate(0.0,0.0,-0.01) ###trans_x###trans_y###trans_z
+glPushMatrix()
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["black"])
+glTranslate(0.0,-0.09,0.3) ###trans_x###trans_y###trans_z
+glRotate(10.0,1.0,0.0,0) ###value###axis_x###axis_y###axis_z
+gluDisk(q,0.0,0.1,12,12) ###xxx###yyy###Isegments###Istacks
+glPopMatrix()
+glPushMatrix()
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+glTranslate(-0.1,0.07,0.31) ###trans_x###trans_y###trans_z
+gluDisk(q,0.03,0.08,12,12) ###xxx###yyy###Isegments###Istacks
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+glRotate(20.0,0,0.0,1.0) ###value###axis_x###axis_y###axis_z
+glScale(1.0,0.3,0.7) ###scale_x###scale_y###scale_z
+glTranslate(0.0,0.2,0.0) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.1,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+glPushMatrix()
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+glTranslate(0.1,0.07,0.31) ###trans_x###trans_y###trans_z
+gluDisk(q,0.03,0.08,12,12) ###xxx###yyy###Isegments###Istacks
+glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+glRotate(-20.0,0,0.0,1.0) ###value###axis_x###axis_y###axis_z
+glScale(1.0,0.3,0.7) ###scale_x###scale_y###scale_z
+glTranslate(0.0,0.2,0.0) ###trans_x###trans_y###trans_z
+glutSolidSphere(0.1,12,12) ###size###Isegments###Istacks
+glPopMatrix()
+glPopMatrix()
+

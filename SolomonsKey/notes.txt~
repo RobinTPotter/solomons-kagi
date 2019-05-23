@@ -1,0 +1,30 @@
+spectrum maps
+found
+15 across
+12 down
+
+"..............."
+".......d......."
+".5............."
+".....sbbbs....."
+".....b343b....."
+"..g..sbbbs..g.."
+"......bbb......"
+"...2.......2..."
+"...sbs.1.sbs..."
+"...b@bbbbbkb..."
+"...sbs...sbs..."
+"..............."
+
+http://maps.speccy.cz/map.php?id=SolomonsKey&sort=4&part=9&ath=
+http://www.lighthouse3d.com/tutorials/glut-tutorial/keyboard-example-moving-around-the-world/
+https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml
+https://www.opengl.org/documentation/specs/glut/glut-3.spec.pdf
+
+  git add .
+  git commit -m "solomon draft 3 finished"
+  git push
+
+
+
+

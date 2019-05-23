@@ -1,0 +1,161 @@
+
+    def detect(self,xx,yy,collision_bound=None,callback=None,ignoreDots=False,ignoreTheseSprites=[]):
+        """ return "OK" message in test of a tuple of (character detected,x of char,y of char,distance float """
+        
+        if collision_bound==None: collision_bound=self.solomon.bound
+        
+        detection=[]
+        
+        for rr in range(int(floor(yy-collision_bound+0.5)),int(ceil(yy+collision_bound+0.5))): #didhave +1
+            list1=""
+            
+            for cc in range(int(floor(xx-collision_bound+0.5)),int(ceil(xx+collision_bound+0.5))):
+                c=self.grid[rr][cc]
+                if not (c=="." and ignoreDots==True):
+                    test=(cc-xx)**2+(rr-yy)**2
+                    list1+=c
+                    if test<(collision_bound)**2:
+                        detection.append((c,cc,rr,sqrt(test)))
+                        
+            #print list1  
+        
+        for s in self.sprites:
+            if not s in ignoreTheseSprites:
+                test=(s.x-xx)**2+(s.y-yy)**2
+                if test<(collision_bound)**2:
+                    detection.append((s,s.x,s.y,sqrt(test)))
+                    
+        
+        detection=sorted(detection,key=lambda x: x[3])  
+
+        if not callback==None: callback(detection)
+              
+        return detection
+        
+
+
+
+
+
+        
+        jumpnow=False
+        walkcheck=False        
+        
+        if self.solomon.A_wandswish.overide==False:
+        
+            self.solomon.current_state["wandswish"]=False  
+
+            if joystick.isDown(keys)==True:                    
+                self.solomon.current_state["crouching"]=True                        
+                self.solomon.current_state["standing"]=False
+            else:     
+                self.solomon.current_state["crouching"]=False               
+                    
+                if joystick.isRight(keys)==True:
+                    self.solomon.facing=1    
+                    self.solomon.current_state["walking"]=True
+                    self.solomon.current_state["standing"]=False                    
+                    walkcheck=True                        
+                elif joystick.isLeft(keys)==True:                
+                    self.solomon.facing=-1    
+                    self.solomon.current_state["walking"]=True
+                    self.solomon.current_state["standing"]=False    
+                    walkcheck=True
+                else:
+                    self.solomon.current_state["walking"]=False                
+                    self.solomon.current_state["standing"]=True                    
+            
+            if walkcheck==True:
+                if joystick.isUp(keys)==True and self.solomon.current_state["jumping"]==False:
+                    self.solomon.current_state["jumping"]=True
+                    jumpnow=True
+                else:
+                    self.solomon.current_state["jumping"]=False
+
+
+
+            xcheck_p=val(self.solomon.x+0.5,self.solomon.step*2*self.solomon.facing)
+            xcheck_m=val(self.solomon.x+0.5,-self.solomon.step*2*self.solomon.facing)
+            
+            #self.solomon.stickers.append([xcheck_p,self.solomon.y-self.solomon.step,0,"white"])
+            #self.solomon.stickers.append([xcheck_m,self.solomon.y-self.solomon.step,0,"white"])
+        
+
+            #self.solomon.stickers.append([xcheck_p,self.solomon.y-self.solomon.step,0,"white"])
+            #self.solomon.stickers.append([xcheck_m,self.solomon.y-self.solomon.step,0,"white"])
+        
+        
+            width=1.5
+        
+            canwalk=False
+            
+            
+            
+            if walkcheck:           
+            
+            
+                col="green"
+                if self.solomon.facing==-1:
+                    col="yellow"
+                    
+                self.solomon.stickers.append([self.solomon.facing*self.solomon.step*width,0,0,col])
+                
+                result=self.detect(val(self.solomon.x,self.solomon.facing*self.solomon.step*width),self.solomon.y)      
+                
+                
+                
+                           
+                if (len(result)==0 or result[0][0]==".") and self.solomon.current_state["walking"]==True:
+                    #self.solomon.x+=self.solomon.step*self.solomon.facing                
+                    self.solomon.current_state["standing"]=False  
+                    self.solomon.current_state["walking"]=True
+                    canwalk=True
+                #elif result[0][0] in ["]
+
+            
+            result1=self.grid[int(self.solomon.y-self.solomon.step)][int(xcheck_p)]
+            result2=self.grid[int(self.solomon.y-self.solomon.step)][int(xcheck_m)]
+            print("fall check" + str((result1,result2,self.solomon.x,self.solomon.y)))
+            if result1=="." and result2==".":
+                self.solomon.y_change(-self.solomon.step)
+                print(("solomon y affected by", -self.solomon.step))
+                self.solomon.current_state["falling"]=True
+                #canwalk=False
+            else:
+                self.solomon.current_state["falling"]=False
+            
+
+            if canwalk==True:
+                print(("self.solomon.x before",self.solomon.x))
+                self.solomon.x_change(self.solomon.step*self.solomon.facing)
+                print(("self.solomon.x after",self.solomon.x))
+
+            if joystick.isFire(keys)==True and self.solomon.current_state["wandswish"]==False:            
+                self.solomon.A_wandswish.kick()
+                self.solomon.A_wandswish.overide=True
+                self.solomon.current_state["wandswish"]=True 
+
+                    
+        if self.solomon.current_state["jumping"]==True:  
+            isWalk=0
+            if self.solomon.current_state["walking"]==True: isWalk=1
+            result=self.detect(self.solomon.x+(self.solomon.facing*self.solomon.step*5.0)*(isWalk),self.solomon.y)     
+            
+            self.solomon.current_state["falling"]=False
+            print(("jumping",result))
+            self.solomon.AG_jump.do()
+            print("he's jumping")
+            print(str(self.solomon.AG_jump.action("jump_displacement").tick  ))
+            print(str(self.solomon.AG_jump.action("jump_displacement").value  ))
+            self.solomon.y+=0.2
+            print(("solomon y affected by", +0.2))
+            #print "co-ordinates "+str((self.solomon.x,self.solomon.y))
+
+        if joystick.isUp(keys)==True and self.solomon.current_state["jumping"]==False:                    
+            self.solomon.current_state["jumping"]=True
+            self.solomon.AG_jump.kick()
+
+
+        if self.solomon.current_state["walking"]==True:
+            self.solomon.AG_walk.do()
+            
