@@ -45,7 +45,8 @@ class Tile:
         self.x,self.y=x,y  
         #col=random.randint(0,len(colours)-1)
         col=x % len(colours)
-        self.colour=colours.keys()[col]
+        self.colour=list(colours.keys())[col]
+        print("tile is {0} and {1}".format(col,self.colour))
         self.controller=controller
         
     def have_turn(self,target, hinge):
@@ -188,22 +189,23 @@ class Thing:
             
         #print len(holes)
         for t in self.tiles:
-            if holes.has_key((t.x,t.y)): del(holes[(t.x,t.y)])
-            if holes.has_key((t.target[0],t.target[1])): del(holes[(t.target[0],t.target[1])])
+            if (t.x,t.y) in holes: del(holes[(t.x,t.y)])
+            if (t.target[0],t.target[1]) in holes: del(holes[(t.target[0],t.target[1])])
     
     
         for k in holes.keys():
-            if k[0]<0: del(holes[k])
-            if k[1]<0: del(holes[k])
-            if k[0]>22: del(holes[k])
-            if k[1]>22: del(holes[k])
+            if k[0]<0: holes[k]=None
+            if k[1]<0: holes[k]=None
+            if k[0]>22: holes[k]=None
+            if k[1]>22: holes[k]=None
         
         #print len(holes)
         next_hole=random.randint(0,len(holes)-1)
-        key=holes.keys()[next_hole]
+        print(next_hole)
+        key=list(holes.keys())[next_hole]
         #print key
-        #print holes
-        holes[key][0].have_turn( key , holes[key][1])
+        print( (key))
+        if not holes.get(key) is None: holes.get(key)[0].have_turn( key , holes.get(key)[1])
                  
             
 
