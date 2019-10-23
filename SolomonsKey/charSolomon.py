@@ -14,12 +14,14 @@ class Solomon:
     AG_jump=None
     A_wandswish=None
     current_state={}
+    size_x=0.6
+    size_y=0.8
     jumping_counter = 0
     jumping_counter_max = 7
     jump_inc_start = 0.5
     jump_inc = 0.2
     jump_inc_falloff = 0.6
-    step_inc = 0.05
+    step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
     jumping_rest_start=2 ##cycles to rest before jump
@@ -73,6 +75,8 @@ class Solomon:
         self.current_state["jumping"]=False
 
     def __init__(self,sx,sy, level):
+
+        print ('init solomon {0},{1}'.format(sx,sy))
 
         self.level=level
 

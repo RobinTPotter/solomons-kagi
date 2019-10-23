@@ -2,7 +2,8 @@
 
 from OpenGL.GLUT import glutSwapBuffers, glutSolidCube, glutKeyboardFunc, glutKeyboardUpFunc, glutDisplayFunc, \
 glutIdleFunc, glutInit, glutInitDisplayMode, glutCreateWindow, glutMainLoop, \
-glutInitWindowSize, glutIgnoreKeyRepeat, glutSpecialFunc, glutReshapeFunc, glutSpecialUpFunc, glutTimerFunc, glutPostRedisplay, GLUT_DOUBLE, GLUT_RGBA, GLUT_DEPTH
+glutInitWindowSize, glutIgnoreKeyRepeat, glutSpecialFunc, glutReshapeFunc, glutSpecialUpFunc, glutTimerFunc, \
+glutPostRedisplay, GLUT_DOUBLE, GLUT_RGBA, GLUT_DEPTH
 
 from OpenGL.GLU import gluPerspective, gluLookAt
 
@@ -37,34 +38,55 @@ from config import *
 def dump(thing):
     print (thing.__dict__)
 
+class XYZ:
+    def __init__(self, x=None, y=None, z=None):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def sub(self, xyz):
+        x = self.x - xyz.x
+        y = self.y - xyz.y
+        z = self.z - xyz.z
+        return XYZ(x,y,z)
+        
+    def add(self, xyz):
+        x = self.x + xyz.x
+        y = self.y + xyz.y
+        z = self.z + xyz.z
+        return XYZ(x,y,z)
+
+    def mult(self, sc):
+        x = self.x * sc
+        y = self.y * sc
+        z = self.z * sc
+        return XYZ(x,y,z)
 
 class SolomonsKey:
 
     level=None
     keys={}
-    cxx,cyy,czz=None,None,None
-    tcxx,tcyy,tczz=0,0,0
-    fxx,fyy,fzz=None,None,None
-    tfxx,tfyy,tfzz=0,0,0
-
+    cam_pos = XYZ(0,0,0)
+    cam_pos_target= XYZ(0,0,0)
+    cam_focus = XYZ(0,0,0)
+    cam_focus_target = XYZ(0,0,0)
     lastFrameTime=0
     topFPS=0
     camera_sweep = 20
     joystick=Joystick()
     
-
     def animate(self,FPS=32):
 
         currentTime=time()
 
         #key movement for omnicontrol
         try:
-            if self.keys["x"]: self.fxx+=1
-            if self.keys["z"]: self.fxx-=1
-            if self.keys["d"]: self.fyy+=1
-            if self.keys["c"]: self.fyy-=1
-            if self.keys["f"]: self.fzz+=1
-            if self.keys["v"]: self.fzz-=1
+            if self.keys["x"]: self.cam_focus.x+=1
+            if self.keys["z"]: self.cam_focus.x-=1
+            if self.keys["d"]: self.cam_focus.y+=1
+            if self.keys["c"]: self.cam_focus.y-=1
+            if self.keys["f"]: self.cam_focus.z+=1
+            if self.keys["v"]: self.cam_focus.z-=1
         except:
             pass
 
@@ -77,34 +99,19 @@ class SolomonsKey:
 
         drawTime=currentTime-self.lastFrameTime
 
-        self.topFPS=int(1000/drawTime)
+        self.topFPS = int(1000/drawTime)
 
         # set camera target focus points
-        self.tfxx,self.tfyy,self.tfzz=self.level.solomon.x+0.2*self.level.solomon.facing,self.level.solomon.y-0.5,3.0
+        self.cam_focus_target = XYZ(self.level.solomon.x+0.2*self.level.solomon.facing,self.level.solomon.y-0.5,3.0)
 
         # set camera target position
-        self.tcxx,self.tcyy,self.tczz=self.level.solomon.x+1*self.level.solomon.facing,self.level.solomon.y-0.2,float(self.level.target_z)
-
-
-        # inititalize current camera positions and focal targets
-        if self.cxx==None: self.cxx=self.tcxx
-        if self.cyy==None: self.cyy=self.tcyy
-        if self.czz==None: self.czz=self.tczz
-        # ....
-        if self.fxx==None: self.fxx=self.tfxx
-        if self.fyy==None: self.fyy=self.tfyy
-        if self.fzz==None: self.fzz=self.tfzz
+        self.cam_pos_target = XYZ(self.level.solomon.x+1*self.level.solomon.facing, self.level.solomon.y-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
-        self.cxx+=(self.tcxx-self.cxx)/self.camera_sweep
-        self.cyy+=(self.tcyy-self.cyy)/self.camera_sweep
-        self.czz+=(self.tczz-self.czz)/self.camera_sweep
-        # ...
-        self.fxx+=(self.tfxx-self.fxx)/self.camera_sweep
-        self.fyy+=(self.tfyy-self.fyy)/self.camera_sweep
-        self.fzz+=(self.tfzz-self.fzz)/self.camera_sweep
-
+        self.cam_pos = self.cam_pos.add( self.cam_pos_target.sub(self.cam_pos).mult(1/self.camera_sweep) )
+        self.cam_focus = self.cam_focus.add( self.cam_focus_target.sub(self.cam_focus).mult(1/self.camera_sweep) )
+        
         self.lastFrameTime=time()
 
     # if windowed ensure aspect ratio correct
@@ -200,18 +207,18 @@ class SolomonsKey:
 
 
     def initkey(self,cl):
-
         for c in cl:
-            self.keydownevent(c.lower(),0,0)
-            self.keyupevent(c.lower(),0,0)
+            self.keydownevent(str(c.lower()).encode(),0,0)
+            self.keyupevent(str(c.lower()).encode(),0,0)
+        print("end initkey")
 
     def display(self):
 
         glLoadIdentity()
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
-        gluLookAt(self.cxx,self.cyy,self.czz,
-                  self.fxx,self.fyy,self.fzz,
+        gluLookAt(self.cam_pos.x,self.cam_pos.y,self.cam_pos.z,
+                  self.cam_focus.x, self.cam_focus.y, self.cam_focus.z,
                   0,1,0)
 
         self.level.draw()
@@ -222,7 +229,7 @@ class SolomonsKey:
                   0, 0, 0  ,
                   0, 1, 0  )
 
-        wdth=0.3
+        wdth=0.4
         glTranslate(0.0-(len(self.level.solomon.current_state.keys())-1)*wdth/2.0,-1.3,0)
 
         if debug==True:
@@ -235,10 +242,10 @@ class SolomonsKey:
                 glPushMatrix()
                 #glLoadIdentity()
                 glScale(0.006,0.01,-0.01)
-                glTranslate(-70,4,-20)
+                glTranslate(-90,4,-20)
                 #glTranslate(-180,-70,0)
-                glTranslate(wdth,0,0)
-                self.letters.drawString(k[:3])
+                glTranslate(-wdth,0,0)
+                self.letters.drawString(k[:4])
                 glPopMatrix()
 
         glLoadIdentity()
@@ -260,6 +267,14 @@ class SolomonsKey:
                 glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[col])
                 glutSolidCube(wdth-0.02)
                 glTranslate(wdth,0,0)
+                glPushMatrix()
+                #glLoadIdentity()
+                glScale(0.005,0.01,-0.01)
+                glTranslate(-45,0,-20)
+                #glTranslate(-180,-70,0)
+                glTranslate(-wdth,0,0)
+                self.letters.drawString(k[2:4])
+                glPopMatrix()
 
         glLoadIdentity()
 
@@ -271,26 +286,31 @@ class SolomonsKey:
         glTranslate(-180,-70,0)
 
         if debug==True:
-            self.letters.drawString(self.level.status1)
+            self.letters.drawString('X'+str(self.level.solomon.x))
             glTranslate(0,0-15,0)
-            self.letters.drawString(self.level.status2)
+            self.letters.drawString('Y'+str(self.level.solomon.y))
             glTranslate(0,0-15,0)
-            self.letters.drawString(self.level.status3)
+            self.letters.drawString('')
 
         glutSwapBuffers()
 
     def keydownevent(self,c,x,y):
+        print ("*******************************************************************************")
         try:
-            self.keys[c.lower()]=True
-        except:
+            self.keys[c]=True
+            print(self.keys)
+        except Exception as e:
+            print(e)    
             pass
 
         glutPostRedisplay()
 
     def keyupevent(self,c,x,y):
         try:
-            if self.keys.has_key(c.lower()): self.keys[c.lower()]=False
-        except:
+            if c in self.keys: self.keys[c]=False
+            print(self.keys)
+        except Exception as e:
+            print(e)    
             pass
 
         glutPostRedisplay()

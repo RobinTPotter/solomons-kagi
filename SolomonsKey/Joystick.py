@@ -2,7 +2,7 @@ class Joystick:
     
     up,down,left,right,fire="","","","",""
 
-    def __init__(self,up="q",down="a",left="o",right="p",fire="m"):
+    def __init__(self,up=b'q',down=b'a',left=b'o',right=b'p',fire=b'm'):
         self.up=up
         self.down=down
         self.left=left

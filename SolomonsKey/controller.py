@@ -54,9 +54,6 @@ class Level:
     solomon=None
     sprites=[]
     bursts=[]
-    status1 = "status1"
-    status2 = "status2"
-    status3 = "status3"
     door=None
     target_z=6
     proper_z=6
@@ -89,7 +86,7 @@ class Level:
             cc=0
             for c in r:
                 if c=="@":
-                    self.solomon=Solomon(cc,rr+0.3,self)
+                    self.solomon=Solomon(cc,rr,self)
                     self.grid[rr][cc]="."
                     self.solomon.A_wandswish.callback=self.block_swap
                     
@@ -177,6 +174,36 @@ class Level:
         self.solomon.stickers.append([0,0,0,"white"])
         """ TODO redo current_state was rubbish anyway """
         
+        if  True:
+            print('solomon x,y: {0},{1}'.format(self.solomon.x,self.solomon.y))  
+            gx,gy=int(self.solomon.x),int(self.solomon.y)
+            print('solomon gx,gy: {0},{1}'.format(gx,gy))            
+            print('grid on: {0}'.format(self.grid[gy][gx]))
+            print('grid below: {0}'.format(self.grid[gy-1][gx]))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         isjumpingoffset=0.3
         
         self.solomon_block_below = [int(self.solomon.x+0.5),int(self.solomon.y-0.1-isjumpingoffset)]
@@ -205,22 +232,25 @@ class Level:
         distanceRight = 1+(int(self.solomon.x+1+0.5))-(self.solomon.x+1+0.5)
 
         under = self.eval_grid(self.solomon_block_below)
-        distance = 1+(int(self.solomon.y+1+0.5))-(self.solomon.y+1+0.5)
+        distance = 1+(int(self.solomon.y+1.0+0.5))-(self.solomon.y+1.0+0.5)
         
-        canwalk=False
+        can_walk=False
 
         if self.solomon.current_state["jumping"]==False and \
             ( under == '.' and ((distanceLeft<0.8 and self.solomon.facing==-1) or (distanceRight<0.8 and self.solomon.facing==1)) ):
             self.solomon.current_state["falling"]=True
             print ("falling")
-            canwalk=False
+            can_walk=False
         else:
             self.solomon.current_state["falling"]=False
-            canwalk=True
+            can_walk=True
             if distance!=0.49 and self.solomon.current_state["jumping"]==False:
                 self.solomon.y=round(self.solomon.y)+0.01
+                print('added 0.01 because distance is {0}'.format(distance))
+                
                 
         if self.solomon.current_state["falling"]==True:
+            print('falling')
             self.solomon.y-=0.25
             self.solomon.y=round(self.solomon.y,2)
             
@@ -295,21 +325,21 @@ class Level:
         else:
             if joystick.isLeft(keys):
                 self.solomon.facing=-1
-                self.status1=left_grid_is
-                self.status2=str(distanceLeft)+ " L"
-                if self.solomon.current_state["jumping"]==False: # and canwalk:
+                if self.solomon.current_state["jumping"]==False: # and can_walk:
                     if (distanceLeft>0.4 or left_grid_is==".") and self.solomon.current_state["crouching"]==False:
                         self.solomon.x-=self.solomon.step_inc
                         walktest=True
 
             if joystick.isRight(keys):
                 self.solomon.facing=1
-                self.status1=right_grid_is
-                self.status2=str(distanceRight)+" R"
-                if self.solomon.current_state["jumping"]==False: # and canwalk:
+                if self.solomon.current_state["jumping"]==False: # and can_walk:
                     if (distanceRight>0.4 or right_grid_is==".") and self.solomon.current_state["crouching"]==False:
                         self.solomon.x+=self.solomon.step_inc
                         walktest=True
+
+        
+        self.solomon.x=round(self.solomon.x,3)
+        self.solomon.y=round(self.solomon.y,3)
 
         for s in self.sprites:
             dist2 = (s.x-self.solomon.x) * (s.x-self.solomon.x) + (s.y-self.solomon.y) * (s.y-self.solomon.y)
@@ -338,8 +368,6 @@ class Level:
         self.solomon.current_state["jumping"]
         self.solomon.current_state["wandswish"]
         self.solomon.current_state["falling"]
-
-        self.status3=str(self.solomon.y)
 
         self.AG_twinklers.do()
         
@@ -441,6 +469,14 @@ class Level:
             glTranslate(self.solomon_block_right[0],self.solomon_block_right[1],0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
             glutWireCube(0.85)
+            glPopMatrix()
+            
+            glPushMatrix()
+            glTranslate(self.solomon.x,self.solomon.y,0)
+            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            glScale(self.solomon.size_x, self.solomon.size_y,1.0)
+            glTranslate(0,-(1-self.solomon.size_y)/2,0)
+            glutWireCube(1)
             glPopMatrix()
 
         for s in self.sprites:
