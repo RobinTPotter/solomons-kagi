@@ -286,9 +286,10 @@ class SolomonsKey:
         glTranslate(-180,-70,0)
 
         if debug==True:
-            self.letters.drawString('X'+str(self.level.solomon.x))
+            self.letters.drawString('X:'+str(self.level.solomon.x)+' Y:'+str(self.level.solomon.y))
             glTranslate(0,0-15,0)
-            self.letters.drawString('Y'+str(self.level.solomon.y))
+            gx,gy=int(self.level.solomon.x),int(self.level.solomon.y)            
+            self.letters.drawString('G {0} on: {1} below: {2}'.format(str((gx,gy)),self.level.grid[gy][gx],self.level.grid[gy-1][gx]))
             glTranslate(0,0-15,0)
             self.letters.drawString('')
 

@@ -16,6 +16,8 @@ class Solomon:
     current_state={}
     size_x=0.6
     size_y=0.8
+    det_size_x=0.4
+    det_size_y=0.6
     jumping_counter = 0
     jumping_counter_max = 7
     jump_inc_start = 0.5
@@ -86,6 +88,7 @@ class Solomon:
         self.current_state["jumping"]=False
         self.current_state["wandswish"]=False
         self.current_state["falling"]=False
+        self.current_state["canfall"]=False
 
         self.x=sx
         self.y=sy
@@ -116,36 +119,38 @@ class Solomon:
         return len([l for l in list if self.current_state[l]==True])
 
 
-    def draw0(self):
+    def draw0(self,stickers=None):
         glTranslate(self.x,self.y,0)
-        glutSolidCube(0.1)
+        glutSolidCube(0.5)
 
 
     def draw(self,stickers=None):
 
-        drawSolProperly=True
-
-        if drawSolProperly:
-            #correction
-            glTranslate(0,-0.15,0)
-
-        #main displacement
-        glTranslate(self.x,self.y,0)
-
-        #scale down character
-        glScale(0.3,0.3,0.3)
 
         if stickers!=None:
             for st in stickers:
+                print("draw sticker {0}".format(str(st)))
                 glPushMatrix()
                 ##glLoadIdentity()
-                #print((st))
+                #print((st))   
+                glTranslate(-0.5,0,0)
                 glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[st[3]])
-                glTranslate(st[0]*10,10*st[1],st[2])
-                glutSolidCube(0.5)
+                glTranslate(st[0],st[1],st[2])
+                glutSolidCube(0.05)
                 glPopMatrix()
 
 
+        drawSolProperly=True
+
+        #if drawSolProperly:
+        #    #correction
+        #    glTranslate(0,-0.15,0)
+
+        #main displacement
+        glTranslate(self.x - 0.5,self.y,0)
+
+        #scale down character
+        glScale(0.3,0.3,0.3)
         #rotate to direction facing
         if self.facing==-1: glRotatef(180,0,1,0)
 

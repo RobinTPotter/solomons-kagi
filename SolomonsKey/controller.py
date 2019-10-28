@@ -21,11 +21,12 @@ def generateLevel(num):
             "s.....sbbbs.....s",
             "s.....b343b.....s",
             "s..g..sbbbs..g..s",
+            "s..g..sbbbs..g..s",
             "s......bbb......s",
             "s...2.......2...s",
             "s...sbs.1.sbs...s",
             "s...b@bbbbbkb...s",
-            "s...sbs...sbs...s",
+            "s...s.s...sbs...s",
             "s...............s",
             "sssssssssssssssss"])
 
@@ -86,7 +87,7 @@ class Level:
             cc=0
             for c in r:
                 if c=="@":
-                    self.solomon=Solomon(cc,rr,self)
+                    self.solomon=Solomon(cc+0.5,rr,self)
                     self.grid[rr][cc]="."
                     self.solomon.A_wandswish.callback=self.block_swap
                     
@@ -171,10 +172,10 @@ class Level:
 
         self.solomon.stickers=[]
 
-        self.solomon.stickers.append([0,0,0,"white"])
+        self.solomon.stickers.append([self.solomon.x,self.solomon.y,0,"white"])
         """ TODO redo current_state was rubbish anyway """
         
-        if  True:
+        if  False:
             print('solomon x,y: {0},{1}'.format(self.solomon.x,self.solomon.y))  
             gx,gy=int(self.solomon.x),int(self.solomon.y)
             print('solomon gx,gy: {0},{1}'.format(gx,gy))            
@@ -182,20 +183,29 @@ class Level:
             print('grid below: {0}'.format(self.grid[gy-1][gx]))
         
         
+        #under box
+        sol_bottom_edge_x1 = self.solomon.x - 0.5 - self.solomon.size_x/2
+        sol_bottom_edge_x2 = self.solomon.x - 0.5 + self.solomon.size_x/2
+        sol_bottom_edge_y2 = self.solomon.y - 0.6     
+        
+        #state to falling or not
+        print ('{} {} {}'.format(int(sol_bottom_edge_x1),int(sol_bottom_edge_y2),self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]))
+        if self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]=='.' and \
+        self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x2)]=='.':
+            self.solomon.current_state["canfall"]=True
+        else:
+            self.solomon.current_state["canfall"]=False
+        
+        self.solomon.stickers.append([sol_bottom_edge_x1,sol_bottom_edge_y2,0,'green'])
+        self.solomon.stickers.append([sol_bottom_edge_x2,sol_bottom_edge_y2,0,'blue'])
+        
+        #self.solomon.x+=0.010
         
         
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        return
         
         
         
@@ -246,7 +256,7 @@ class Level:
             can_walk=True
             if distance!=0.49 and self.solomon.current_state["jumping"]==False:
                 self.solomon.y=round(self.solomon.y)+0.01
-                print('added 0.01 because distance is {0}'.format(distance))
+                #print('added 0.01 because distance is {0}'.format(distance))
                 
                 
         if self.solomon.current_state["falling"]==True:
@@ -401,6 +411,7 @@ class Level:
                 if rr>=0 and rr<=13 and cc>=0 and cc<=16:
                     glPushMatrix()
                     glTranslate(cc,rr,0)
+                    print('{} {}'.format(cc,rr,0))
 
                     if c in ["b","s"]:
                         if c=="b": color = [0.3,0.3,1.0,1.0]
@@ -434,7 +445,7 @@ class Level:
         glPopMatrix()
 
         if debug==True:
-
+            '''
             glPushMatrix()
             glTranslate(self.solomon_block_below[0],self.solomon_block_below[1],0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
@@ -470,12 +481,30 @@ class Level:
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
             glutWireCube(0.85)
             glPopMatrix()
+            '''            
+            #centre spot
+            ##glPushMatrix()
+            ##glTranslate(self.solomon.x,self.solomon.y,0)
+            ##glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+            ##glScale(0.4, 0.4,0.4)
+            ##glutSolidCube(1)
+            ##glPopMatrix()
             
+            #size box for edge/falling etc
             glPushMatrix()
             glTranslate(self.solomon.x,self.solomon.y,0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            glTranslate(0,-((1-self.solomon.size_y)/2),0)
             glScale(self.solomon.size_x, self.solomon.size_y,1.0)
-            glTranslate(0,-(1-self.solomon.size_y)/2,0)
+            glutWireCube(1)
+            glPopMatrix()
+            
+            #detection box for enemies/items
+            glPushMatrix()
+            glTranslate(self.solomon.x,self.solomon.y,0)
+            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            glTranslate(0,-((1-self.solomon.det_size_y)/2),0)
+            glScale(self.solomon.det_size_x, self.solomon.det_size_y,1.0)
             glutWireCube(1)
             glPopMatrix()
 
