@@ -113,7 +113,7 @@ class Solomon:
 
         self.AG_walk.speed_scale(2)
 
-        self.A_wandswish=Action(func=self.swish,min=-8,max=-1,cycle=False,reverseloop=False,init_tick=-4)
+        self.A_wandswish=Action(func=self.swish,min=-8,max=-1,cycle=False,reverseloop=False,init_tick=-6)
 
 
     def state_test_on(self):

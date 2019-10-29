@@ -138,8 +138,8 @@ class Level:
         
         if not bump_only:
             #wand flare!
-            crouch=0
-            if self.solomon.current_state["crouching"]==True: crouch=-0.4
+            crouch=0.5
+            if self.solomon.current_state["crouching"]==True: crouch=0
             self.bursts.append(Burst(x=self.solomon.x+self.solomon.facing*0.5,y=self.solomon.y+crouch,z=0))
 
         #must be in correct place first
@@ -282,7 +282,7 @@ class Level:
             self.solomon.wand_rest-=1
 
         
-        if self.solomon.current_state["canfall"]:
+        if self.solomon.current_state["canfall"] and self.solomon.current_state["wandswish"]==False:
             self.solomon.y-=self.solomon.fall_inc
             self.solomon.y = round(self.solomon.y,3)            
         
