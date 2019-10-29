@@ -16,7 +16,7 @@ def SubDivLineString(list_of_vectors,total_sub_divs=DIVS):
 
     while divs<total_sub_divs:
         divs+=1
-        print divs
+        print ( divs)
         i=1
         while i<len(list_of_vectors):
             ave=(0.5*(list_of_vectors[i][0]+list_of_vectors[i-1][0]),0.5*(list_of_vectors[i][1]+list_of_vectors[i-1][1]),)
@@ -45,7 +45,7 @@ def SubDivLineString(list_of_vectors,total_sub_divs=DIVS):
 
 def DoLetter(letter,vector_list):
 
-    print "doing "+letter
+    print ("doing "+letter)
     lists[letter] = glGenLists(1) 
     list=SubDivLineString(vector_list)    
     glNewList(lists[letter],GL_COMPILE) 

@@ -65,39 +65,40 @@ class Joystick:
         self.keys[self.fire]=False
 
     def register(self,ch,down):
-        #print "register "+str(ch)+str(type(ch))
+        print ("register "+str(ch)+str(type(ch)))
         extra=""
-        if type(ch) is str:
-            extra=str(ord(ch))
-            if extra in ["13","27","8"]: ch=int(extra)
+        #if type(ch) is str:
+        #    extra=str(ord(ch))
+        #    if extra in ["13","27","8"]: ch=int(extra)
 
         #if not self.keys.has_key(ch): print str(ch)+" "+extra
         self.keys[ch]=down
 
     def isKey(self,ch):
-        if self.keys.has_key(ch):
+        #print ('is key {} {}'.format(ch,ch in self.keys))
+        if ch in self.keys:
             return self.keys[ch]
         else: return False
 
     def isUp(self):
-        if self.keys.has_key(self.up):
+        if self.up in self.keys:
             return self.keys[self.up]
         else: return False
 
     def isDown(self):
-        if self.keys.has_key(self.down): return self.keys[self.down]
+        if self.down in self.keys: return self.keys[self.down]
         else: return False
 
     def isLeft(self):
-        if self.keys.has_key(self.left): return self.keys[self.left]
+        if self.left in self.keys: return self.keys[self.left]
         else: return False
 
     def isRight(self):
-        if self.keys.has_key(self.right): return self.keys[self.right]
+        if self.right in self.keys: return self.keys[self.right]
         else: return False
 
     def isFire(self):
-        if self.keys.has_key(self.fire): return self.keys[self.fire]
+        if self.fire in self.keys: return self.keys[self.fire]
         else: return False
 
 
@@ -157,7 +158,7 @@ class Thing:
         elif self.joystick.isKey(27): ##escape edit mode
             self.state="browse"
             if self.state=="edit": self.menuindex=self.edititem
-            print str(self.menuindex)
+            print (str(self.menuindex))
             #return
 
         elif self.state=="browse":
@@ -173,11 +174,11 @@ class Thing:
                         f.write(ll+"\n")
                     f.write("\n")
                     f.close()
-                    print "written out file "+str(file_name)
+                    print("written out file "+str(file_name))
                     #return
 
                 except Exception as ex:
-                    print "bugger, "+str(file_name)+" not written out"
+                    print ("bugger, "+str(file_name)+" not written out")
 
             elif self.joystick.isKey("l"): ##load in 
 
@@ -188,7 +189,7 @@ class Thing:
                         if not (len(ll)==0 or ll==""): tmp.append(ll)
 
                     f.close()
-                    print "successfully read "+str(file_name)
+                    print ("successfully read "+str(file_name))
 
                     ##had to to this wasn't updateing other wise
                     self.menuindex=0
@@ -197,7 +198,7 @@ class Thing:
 
 
                 except Exception as ex:
-                    print "bugger, file "+str(file_name)+" not read"
+                    print ("bugger, file "+str(file_name)+" not read")
 
                 #return
 
@@ -252,10 +253,10 @@ class Thing:
 
 
             elif self.joystick.isKey(8) and len(tmp)>0: ##delete
-                print "delete! started"
-                print "delete! "+str(self.menuindex)
-                print "delete! "+str(self.menu[self.menuindex])
-                print "delete! "+str(tmp[self.menuindex])
+                print ("delete! started"                           )
+                print ("delete! "+str(self.menuindex)              )
+                print ("delete! "+str(self.menu[self.menuindex])   )
+                print ("delete! "+str(tmp[self.menuindex])         )
                 
                 
                 if str(self.menu[self.menuindex])=="glPopMatrix()" or str(self.menu[self.menuindex])=="glEnd()": 
@@ -670,7 +671,7 @@ class Thing:
 
                 
                 if self.lastMenu==self.menu:
-                    if lists.has_key("menu"): glCallList(lists["menu"])
+                    if "menu" in lists: glCallList(lists["menu"])
                     #print("menu called")
                 else:
                     #print("menu generated") 
@@ -728,13 +729,13 @@ class Thing:
 
         except Exception as e:
 
-            print str(traceback.print_exc(file=sys.stdout))
+            print (str(traceback.print_exc(file=sys.stdout)))
 
-            print "Bollocks! Dumping\n----------------------------\n\n"
+            print ("Bollocks! Dumping\n----------------------------\n\n")
             for f in self.temp:
-                print f
+                print (f)
 
-            print "\n----------------------------\nBollocks! Dumped!\n\n"
+            print ("\n----------------------------\nBollocks! Dumped!\n\n")
             sys.exit(0)
 
         finally:
@@ -754,7 +755,7 @@ class Thing:
             glTranslate(0,0,0.5)
             glColor(colours["black"])
             glLineWidth(3.0)
-            if lists.has_key(string[l].upper()): glCallList(lists[string[l].upper()])
+            if string[l].upper() in lists: glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
             
@@ -762,7 +763,7 @@ class Thing:
             glTranslate(0,0,0)
             glColor(colours[col])
             glLineWidth(0.5)
-            if lists.has_key(string[l].upper()): glCallList(lists[string[l].upper()])
+            if string[l].upper() in lists: glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
             glTranslate(14,0,0)
@@ -853,7 +854,7 @@ class Thing:
 
 
     def reshape(self,width,height):
-        print "hello reshape "+str((width,height))
+        print ("hello reshape "+str((width,height)))
         self.HEIGHT=float(height)
         self.WIDTH=float(width)
         glViewport(0,0,int(self.WIDTH),int(self.HEIGHT)        )
@@ -879,7 +880,7 @@ class Thing:
         if mod&GLUT_ACTIVE_ALT==GLUT_ACTIVE_ALT: self.joystick.isAlt=True
         if mod&GLUT_ACTIVE_SHIFT==GLUT_ACTIVE_SHIFT: self.joystick.isShift=True
 
-        #print str(c)
+        print (str(c))
         if type(c) is str: self.joystick.register(c.lower(),True)
         else: self.joystick.register(c,True)
 
