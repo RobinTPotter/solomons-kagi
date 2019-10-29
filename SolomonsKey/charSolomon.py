@@ -133,7 +133,6 @@ class Solomon:
                 glPushMatrix()
                 ##glLoadIdentity()
                 #print((st))   
-                glTranslate(-0.5,0,0)
                 glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[st[3]])
                 glTranslate(st[0],st[1],st[2])
                 glutSolidCube(0.05)
@@ -147,16 +146,38 @@ class Solomon:
         #    glTranslate(0,-0.15,0)
 
         #main displacement
-        glTranslate(self.x - 0.5,self.y,0)
+        glTranslate(self.x,self.y,0)    
+        
 
-        #scale down character
-        glScale(0.3,0.3,0.3)
+        if drawSolProperly==False:
+            #size box for edge/falling etc
+            glPushMatrix()
+            #glTranslate(self.x,self.y,0)
+            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            glTranslate(0,self.size_y/2,0)
+            glScale(self.size_x, self.size_y,1.0)
+            glutWireCube(1)
+            glPopMatrix()
+            
+            #detection box for enemies/items
+            glPushMatrix()
+            #glTranslate(self.x,self.y,0)
+            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            glTranslate(0,self.det_size_y/2,0)
+            glScale(self.det_size_x, self.det_size_y,1.0)
+            glutWireCube(1)
+            glPopMatrix()
+        else:            
+            #offset model
+            glTranslate(0,0.35,0)            
+            #scale down character
+            glScale(0.3,0.3,0.3)
+        
         #rotate to direction facing
         if self.facing==-1: glRotatef(180,0,1,0)
 
         #correction for drawing character
         glRotatef(-90.0,1.0,0,0)
-
 
         #if not drawSolProperly:
         #    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])

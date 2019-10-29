@@ -87,7 +87,7 @@ class Level:
             cc=0
             for c in r:
                 if c=="@":
-                    self.solomon=Solomon(cc+0.5,rr,self)
+                    self.solomon=Solomon(cc,rr,self)
                     self.grid[rr][cc]="."
                     self.solomon.A_wandswish.callback=self.block_swap
                     
@@ -184,9 +184,9 @@ class Level:
         
         
         #under box
-        sol_bottom_edge_x1 = self.solomon.x - 0.5 - self.solomon.size_x/2
-        sol_bottom_edge_x2 = self.solomon.x - 0.5 + self.solomon.size_x/2
-        sol_bottom_edge_y2 = self.solomon.y - 0.6     
+        sol_bottom_edge_x1 = self.solomon.x  - self.solomon.size_x/2
+        sol_bottom_edge_x2 = self.solomon.x  + self.solomon.size_x/2
+        sol_bottom_edge_y2 = self.solomon.y    
         
         #state to falling or not
         print ('{} {} {}'.format(int(sol_bottom_edge_x1),int(sol_bottom_edge_y2),self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]))
@@ -399,7 +399,7 @@ class Level:
         glPushMatrix()
         glTranslate(8,6.5,-0.55)
         glScale(15,12,0.1)
-        glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["black"])
+        glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
         glutSolidCube(1)
         glPopMatrix()
 
@@ -410,14 +410,13 @@ class Level:
                 #if True:
                 if rr>=0 and rr<=13 and cc>=0 and cc<=16:
                     glPushMatrix()
-                    glTranslate(cc,rr,0)
-                    print('{} {}'.format(cc,rr,0))
-
+                    glTranslate(cc,rr+0.5,0)
+                    
                     if c in ["b","s"]:
                         if c=="b": color = [0.3,0.3,1.0,1.0]
                         elif c=="s": color = [1.0,1.0,0.0,1.0]
                         glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
-                        glutSolidCube(1)
+                        if True: glutSolidCube(1)
 
                     elif c in ["d","6"]:
                         glEnable(GL_BLEND)
@@ -490,23 +489,23 @@ class Level:
             ##glutSolidCube(1)
             ##glPopMatrix()
             
-            #size box for edge/falling etc
-            glPushMatrix()
-            glTranslate(self.solomon.x,self.solomon.y,0)
-            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
-            glTranslate(0,-((1-self.solomon.size_y)/2),0)
-            glScale(self.solomon.size_x, self.solomon.size_y,1.0)
-            glutWireCube(1)
-            glPopMatrix()
-            
-            #detection box for enemies/items
-            glPushMatrix()
-            glTranslate(self.solomon.x,self.solomon.y,0)
-            glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
-            glTranslate(0,-((1-self.solomon.det_size_y)/2),0)
-            glScale(self.solomon.det_size_x, self.solomon.det_size_y,1.0)
-            glutWireCube(1)
-            glPopMatrix()
+            #####size box for edge/falling etc
+            ####glPushMatrix()
+            ####glTranslate(self.solomon.x,self.solomon.y,0)
+            ####glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            ####glTranslate(0,self.solomon.size_y/2,0)
+            ####glScale(self.solomon.size_x, self.solomon.size_y,1.0)
+            ####glutWireCube(1)
+            ####glPopMatrix()
+            ####
+            #####detection box for enemies/items
+            ####glPushMatrix()
+            ####glTranslate(self.solomon.x,self.solomon.y,0)
+            ####glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
+            ####glTranslate(0,self.solomon.det_size_y/2,0)
+            ####glScale(self.solomon.det_size_x, self.solomon.det_size_y,1.0)
+            ####glutWireCube(1)
+            ####glPopMatrix()
 
         for s in self.sprites:
             glPushMatrix()

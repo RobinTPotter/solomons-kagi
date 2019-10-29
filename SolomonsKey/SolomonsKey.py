@@ -1,9 +1,9 @@
-#!/bin/python
+#!/bin/python3
 
 from OpenGL.GLUT import glutSwapBuffers, glutSolidCube, glutKeyboardFunc, glutKeyboardUpFunc, glutDisplayFunc, \
 glutIdleFunc, glutInit, glutInitDisplayMode, glutCreateWindow, glutMainLoop, \
 glutInitWindowSize, glutIgnoreKeyRepeat, glutSpecialFunc, glutReshapeFunc, glutSpecialUpFunc, glutTimerFunc, \
-glutPostRedisplay, GLUT_DOUBLE, GLUT_RGBA, GLUT_DEPTH
+glutPostRedisplay, GLUT_DOUBLE, GLUT_RGBA, GLUT_DEPTH, glutWireCube
 
 from OpenGL.GLU import gluPerspective, gluLookAt
 
@@ -221,7 +221,7 @@ class SolomonsKey:
                   self.cam_focus.x, self.cam_focus.y, self.cam_focus.z,
                   0,1,0)
 
-        self.level.draw()
+        self.level.draw()       
 
         glLoadIdentity()
 
