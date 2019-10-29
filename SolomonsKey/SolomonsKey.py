@@ -229,7 +229,7 @@ class SolomonsKey:
                   0, 0, 0  ,
                   0, 1, 0  )
 
-        wdth=0.4
+        wdth=0.3
         glTranslate(0.0-(len(self.level.solomon.current_state.keys())-1)*wdth/2.0,-1.3,0)
 
         if debug==True:
@@ -241,7 +241,7 @@ class SolomonsKey:
                 glTranslate(wdth,0,0)
                 glPushMatrix()
                 #glLoadIdentity()
-                glScale(0.006,0.01,-0.01)
+                glScale(0.005,0.01,-0.01)
                 glTranslate(-90,4,-20)
                 #glTranslate(-180,-70,0)
                 glTranslate(-wdth,0,0)

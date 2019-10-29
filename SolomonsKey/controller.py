@@ -50,6 +50,7 @@ def generateLevel(num):
 
 class Level:
 
+    counter=0
     grid=None
     baddies=[]
     solomon=None
@@ -168,7 +169,19 @@ class Level:
                 elif ch=="k" and not bump_only:
                     print ("*****KEY STRUCK!*****")
 
+    def grid_cell(self,coords):
+        x=coords[0]
+        y=int(coords[1])        
+        dx = round(x - int(x),3)
+        #print('in {} {} dx {}'.format(x,y,dx))
+        if dx>0.5: x = int(x) +1 
+        if dx<0.5: x = int(x)
+        return [x,y]
+
     def evaluate(self,joystick,keys):
+
+        self.counter+=1
+        if self.counter>100000: self.counter=0
 
         self.solomon.stickers=[]
 
@@ -182,24 +195,43 @@ class Level:
             print('grid on: {0}'.format(self.grid[gy][gx]))
             print('grid below: {0}'.format(self.grid[gy-1][gx]))
         
+        self.solomon.drawSolProperly=int((self.counter)/50)%2==0
         
         #under box
         sol_bottom_edge_x1 = self.solomon.x  - self.solomon.size_x/2
         sol_bottom_edge_x2 = self.solomon.x  + self.solomon.size_x/2
-        sol_bottom_edge_y2 = self.solomon.y    
+        sol_bottom_edge_y2 = self.solomon.y - 0.1    
+        sol_top_edge_y2 = self.solomon.y + self.solomon.size_y    
+        
+        sol_blockbelow_coord_x1 = self.grid_cell([sol_bottom_edge_x1,sol_bottom_edge_y2])
+        sol_blockbelow_coord_x2 = self.grid_cell([sol_bottom_edge_x2,sol_bottom_edge_y2])
+        
+        #print ('{} {}'.format(sol_blockbelow_coord_x1,sol_blockbelow_coord_x2))
         
         #state to falling or not
-        print ('{} {} {}'.format(int(sol_bottom_edge_x1),int(sol_bottom_edge_y2),self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]))
-        if self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]=='.' and \
-        self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x2)]=='.':
+        #print ('{} {} {} {} {} {}'.format(self.solomon.x,sol_bottom_edge_x1,sol_bottom_edge_y2,int(sol_bottom_edge_x1),int(sol_bottom_edge_y2),self.grid[int(sol_bottom_edge_y2)][int(sol_bottom_edge_x1)]))
+        if self.grid[sol_blockbelow_coord_x1[1]][sol_blockbelow_coord_x1[0]]=='.' and \
+        self.grid[sol_blockbelow_coord_x2[1]][sol_blockbelow_coord_x1[0]]=='.':
             self.solomon.current_state["canfall"]=True
         else:
             self.solomon.current_state["canfall"]=False
         
-        self.solomon.stickers.append([sol_bottom_edge_x1,sol_bottom_edge_y2,0,'green'])
-        self.solomon.stickers.append([sol_bottom_edge_x2,sol_bottom_edge_y2,0,'blue'])
+        #stickers for underneath (floor) detection
+        #self.solomon.stickers.append([sol_bottom_edge_x1,sol_bottom_edge_y2,0,'green'])
+        #self.solomon.stickers.append([sol_bottom_edge_x2,sol_bottom_edge_y2,0,'blue'])
         
-        #self.solomon.x+=0.010
+        #stickers for right side solomon (wall) detect
+        self.solomon.stickers.append([sol_bottom_edge_x2,sol_top_edge_y2,0,'green'])
+        self.solomon.stickers.append([sol_bottom_edge_x2,self.solomon.y,0,'blue'])
+        
+        #stickers for left side solomon (wall) detect
+        self.solomon.stickers.append([sol_bottom_edge_x1,sol_top_edge_y2,0,'green'])
+        self.solomon.stickers.append([sol_bottom_edge_x1,self.solomon.y,0,'blue'])
+        
+        #stickers for showing which block is investigating
+        #self.solomon.stickers.append(sol_blockbelow_coord_x1+[0.1,'green'])
+        #self.solomon.stickers.append(sol_blockbelow_coord_x2+[0,'blue'])
+        
         
         
         

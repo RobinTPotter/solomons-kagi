@@ -7,6 +7,7 @@ from Models import lists, MakeLists, colours
 
 class Solomon:
 
+    drawSolProperly=True
     x,y=None,None
     startx,starty=None,None
     #st_a=None
@@ -88,6 +89,8 @@ class Solomon:
         self.current_state["jumping"]=False
         self.current_state["wandswish"]=False
         self.current_state["falling"]=False
+        self.current_state["cwleft"]=False
+        self.current_state["cwright"]=False
         self.current_state["canfall"]=False
 
         self.x=sx
@@ -129,7 +132,6 @@ class Solomon:
 
         if stickers!=None:
             for st in stickers:
-                print("draw sticker {0}".format(str(st)))
                 glPushMatrix()
                 ##glLoadIdentity()
                 #print((st))   
@@ -139,9 +141,8 @@ class Solomon:
                 glPopMatrix()
 
 
-        drawSolProperly=True
 
-        #if drawSolProperly:
+        #if self.drawSolProperly:
         #    #correction
         #    glTranslate(0,-0.15,0)
 
@@ -149,7 +150,7 @@ class Solomon:
         glTranslate(self.x,self.y,0)    
         
 
-        if drawSolProperly==False:
+        if self.drawSolProperly==False:
             #size box for edge/falling etc
             glPushMatrix()
             #glTranslate(self.x,self.y,0)
@@ -179,7 +180,7 @@ class Solomon:
         #correction for drawing character
         glRotatef(-90.0,1.0,0,0)
 
-        #if not drawSolProperly:
+        #if not self.drawSolProperly:
         #    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
         #    glutSolidCube(0.2)
 
@@ -198,14 +199,14 @@ class Solomon:
             if "walking" in self.state_test_on(): glRotatef(-float(self.AG_walk.value("wobble")),1.0,0,0)
             glTranslate(0,0,0.5)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["hat"])
-            if drawSolProperly: glutSolidCone(1,2,12,6)
+            if self.drawSolProperly: glutSolidCone(1,2,12,6)
             glPopMatrix()
 
             #head/body
             glPushMatrix()
             glTranslate(0,0,0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["body"])
-            if drawSolProperly: glutSolidSphere(1,12,12)
+            if self.drawSolProperly: glutSolidSphere(1,12,12)
             glPopMatrix()
 
             #left arm
@@ -213,7 +214,7 @@ class Solomon:
             if self.state_test(["walking"])>0: glTranslate(0-float(self.AG_walk.value("footR"))/10,0.9,0)
             elif self.state_test(["standing","crouching","wandswish"])>0: glTranslate(0,0.9,0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["arm"])
-            if drawSolProperly: glutSolidSphere(0.5,24,12)
+            if self.drawSolProperly: glutSolidSphere(0.5,24,12)
             glPopMatrix()
 
         #right arm
@@ -230,7 +231,7 @@ class Solomon:
         elif self.state_test(["walking"])>0: glTranslate(float(self.AG_walk.value("footL"))/10,-0.9,0)
         elif self.state_test(["standing","crouching"])>0: glTranslate(0,-0.9,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["arm"])
-        if drawSolProperly: glutSolidSphere(0.5,24,12)
+        if self.drawSolProperly: glutSolidSphere(0.5,24,12)
         #move pop to end to keep arm local system
 
         #wand
@@ -240,14 +241,14 @@ class Solomon:
         glTranslate(1.1,0,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["wandtip"])
         glRotatef(90,0,1,0)
-        if drawSolProperly: gluCylinder(q,0.1,0.1,0.2,12,1)
+        if self.drawSolProperly: gluCylinder(q,0.1,0.1,0.2,12,1)
         glPopMatrix()
 
         glPushMatrix()
         glTranslate(0.5,0,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["wand"])
         glRotatef(90,0,1,0)
-        if drawSolProperly: gluCylinder(q,0.1,0.1,0.6,12,1)
+        if self.drawSolProperly: gluCylinder(q,0.1,0.1,0.6,12,1)
         glPopMatrix()
 
         #from arm
@@ -258,14 +259,14 @@ class Solomon:
         glTranslate(1,.2,.1)
         glRotatef(90,0,1,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["wandtip"])
-        if drawSolProperly: gluDisk(q,0.05,0.2,12,12)
+        if self.drawSolProperly: gluDisk(q,0.05,0.2,12,12)
         glPopMatrix()
 
         glPushMatrix()
         glTranslate(1,-.2,.1)
         glRotatef(90,0,1,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["wandtip"])
-        if drawSolProperly: gluDisk(q,0.05,0.2,12,12)
+        if self.drawSolProperly: gluDisk(q,0.05,0.2,12,12)
         glPopMatrix()
 
         #nose
@@ -273,7 +274,7 @@ class Solomon:
         glTranslate(1,0,-.1)
         glScale(1,1,0.5)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["arm"])
-        if drawSolProperly: glutSolidSphere(0.3,24,12)
+        if self.drawSolProperly: glutSolidSphere(0.3,24,12)
         glPopMatrix()
 
         ##########################left crouch section##################################
@@ -290,7 +291,7 @@ class Solomon:
         glScale(1.7,1,.5)
         glTranslate(0,0.5,-2)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["shoe"])
-        if drawSolProperly: glutSolidSphere(0.5,24,12)
+        if self.drawSolProperly: glutSolidSphere(0.5,24,12)
         glPopMatrix()
 
         #right foot
@@ -303,7 +304,7 @@ class Solomon:
         glScale(1.7,1,.5)
         glTranslate(0,-0.5,-2)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["shoe"])
-        if drawSolProperly: glutSolidSphere(0.5,24,12)
+        if self.drawSolProperly: glutSolidSphere(0.5,24,12)
         glPopMatrix()
 
 
