@@ -28,6 +28,7 @@ class Solomon:
     jumping_dir=0
     jumping_rest=0
     jumping_rest_start=2 ##cycles to rest before jump
+    fall_inc=0.1
     wand_rest=0
     wand_rest_start=8 ##cycles to rest before jump
     
