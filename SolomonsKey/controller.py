@@ -97,7 +97,7 @@ class Level:
                     self.grid[rr][cc]="."
 
                 elif c=="k":
-                    ns=Sprite(cc,rr)
+                    ns=Sprite(cc,rr+0.5)
                     ns.setDrawFuncToList(lists["green_key"])
                     ns.collision_action=self.key_detected_something_test
                     self.sprites.append(ns)
@@ -125,7 +125,7 @@ class Level:
         self.solomon.current_state["wandswish"]=False
         print("hi from block swap "+str(self.solomon))
         takeoff_for_crouching=0
-        if self.solomon.state_test(["crouching"])>0 : takeoff_for_crouching=-0.8
+        if self.solomon.state_test(["crouching"])>0 : takeoff_for_crouching=-0.5
 
         ##if res=="OK": return
 
@@ -143,15 +143,16 @@ class Level:
             self.bursts.append(Burst(x=self.solomon.x+self.solomon.facing*0.5,y=self.solomon.y+crouch,z=0))
 
         #must be in correct place first
-        distanceLeft = (self.solomon.x-1+0.5)-(int(self.solomon.x-1+0.5))
-        distanceRight = 1+(int(self.solomon.x+1+0.5))-(self.solomon.x+1+0.5)
+        distanceLeft = 0.5 + (self.solomon.x)-(int(self.solomon.x))
+        distanceRight = 0.5 + (int(self.solomon.x+1))-(self.solomon.x)
         distance = 0
         if self.solomon.facing==-1: distance=distanceLeft
         elif self.solomon.facing==1: distance=distanceRight
-            
+        
+        print('distance {}'.format(distance))
         #check not in block space when casting
         
-        if distance > 0.075:
+        if distance > 1.1:
             if bump_only:
                 if ch=="b":
                     print("destroy block")
@@ -269,7 +270,10 @@ class Level:
                     self.solomon.current_state["wandswish"]=True   
                     print ("swish")
                     if self.solomon.facing==-1: self.block_to_action = self.grid_cell([self.solomon.x-1,self.solomon.y])
-                    elif self.solomon.facing==1: self.block_to_action = self.grid_cell([self.solomon.x+1,self.solomon.y])
+                    elif self.solomon.facing==1:
+                        if round((self.solomon.x-int(self.solomon.x)),3)==0.45: print (' booh! {}'.format(self.grid_cell([self.solomon.x+1,self.solomon.y])))
+                        print ('plop')
+                        self.block_to_action = self.grid_cell([self.solomon.x+1,self.solomon.y])
                     if self.solomon.current_state["crouching"]==True:
                         self.block_to_action=[self.block_to_action[0],self.block_to_action[1]-1]
                     
@@ -287,20 +291,29 @@ class Level:
             self.solomon.y = round(self.solomon.y,3)            
         
         self.solomon.current_state["walking"]=False
+        
+        
+        self.solomon.current_state["crouching"]=False
+        if joystick.isDown(keys):
+            self.solomon.current_state["crouching"]=True
+            
+            
             
         if joystick.isRight(keys):
             self.solomon.facing=1
-            self.solomon.current_state["walking"]=True
-            if self.solomon.current_state["cwright"]:
-                self.solomon.x+=self.solomon.step_inc
-                self.solomon.x = round(self.solomon.x,3)
+            if self.solomon.current_state["crouching"]==False:
+                self.solomon.current_state["walking"]=True
+                if self.solomon.current_state["cwright"]:
+                    self.solomon.x+=self.solomon.step_inc
+                    self.solomon.x = round(self.solomon.x,3)
         
         if joystick.isLeft(keys):
             self.solomon.facing=-1
-            self.solomon.current_state["walking"]=True
-            if self.solomon.current_state["cwleft"]:
-                self.solomon.x-=self.solomon.step_inc
-                self.solomon.x = round(self.solomon.x,3)
+            if self.solomon.current_state["crouching"]==False:
+                self.solomon.current_state["walking"]=True
+                if self.solomon.current_state["cwleft"]:
+                    self.solomon.x-=self.solomon.step_inc
+                    self.solomon.x = round(self.solomon.x,3)
  
         
         if self.solomon.current_state["walking"]:
