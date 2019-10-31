@@ -202,9 +202,11 @@ class Level:
         self.solomon.drawSolProperly=int((self.counter)/20)%2==0
         
         #under box
-        sol_bottom_edge_x1 = self.solomon.x  - self.solomon.size_x/2
+        twitch_left = 0.01
+        # so the box presses to right edge flush
+        sol_bottom_edge_x1 = self.solomon.x  - self.solomon.size_x/2 + twitch_left
         sol_bottom_edge_x2 = self.solomon.x  + self.solomon.size_x/2
-        sol_bottom_edge_y2 = self.solomon.y - self.solomon.fall_inc    
+        sol_bottom_edge_y2 = self.solomon.y - self.solomon.fall_detect    
         sol_top_edge_y2 = self.solomon.y + self.solomon.size_y    
         
         #grid cell for below left and right
@@ -258,7 +260,7 @@ class Level:
         #self.solomon.stickers.append(sol_blockbelow_coord_x1+[0.1,'green'])
         #self.solomon.stickers.append(sol_blockbelow_coord_x2+[0,'blue'])
 
-        #wand is used to hover
+        #wand is used to hover, so comes before fall and walk
         if joystick.isFire(keys):
             print('fire')
             if self.solomon.current_state["wandswish"]==False:
@@ -282,23 +284,29 @@ class Level:
                 print ("blah")
                 pass
         
+        # decrease wand swish counter
         if self.solomon.wand_rest>0:
             self.solomon.wand_rest-=1
 
-        
+        # can fall state true and not swishing wand means can fall
         if self.solomon.current_state["canfall"] and self.solomon.current_state["wandswish"]==False:
             self.solomon.y-=self.solomon.fall_inc
-            self.solomon.y = round(self.solomon.y,3)            
+            self.solomon.y = round(self.solomon.y,3)
+
+        if self.solomon.current_state["canfall"]==False:
+            if not int(self.solomon.y)==self.solomon.y:
+                self.solomon.y = round(self.solomon.y ,1)
         
+        # defaults to can't walk
         self.solomon.current_state["walking"]=False
         
-        
+        # crouch, does nothing to collision detection
+        # only offsets the wand target
         self.solomon.current_state["crouching"]=False
         if joystick.isDown(keys):
-            self.solomon.current_state["crouching"]=True
+            self.solomon.current_state["crouching"]=True            
             
-            
-            
+        # if not crouching and keys pressed try walking right, animate but move only if can    
         if joystick.isRight(keys):
             self.solomon.facing=1
             if self.solomon.current_state["crouching"]==False:
@@ -307,6 +315,7 @@ class Level:
                     self.solomon.x+=self.solomon.step_inc
                     self.solomon.x = round(self.solomon.x,3)
         
+        # if not crouching and keys pressed try walking left, animate but move only if can
         if joystick.isLeft(keys):
             self.solomon.facing=-1
             if self.solomon.current_state["crouching"]==False:
@@ -315,9 +324,85 @@ class Level:
                     self.solomon.x-=self.solomon.step_inc
                     self.solomon.x = round(self.solomon.x,3)
  
+ 
+ 
+ 
+ 
         
+        if self.solomon.current_state["jumping"]==False and \
+            self.solomon.current_state["crouching"]==False and \
+            self.solomon.current_state["falling"]==False and self.solomon.current_state["canfall"]==False:
+            if joystick.isUp(keys):
+                if self.solomon.jumping_rest==0:
+                    self.solomon.jumping_rest=self.solomon.jumping_rest_start
+                    self.solomon.current_state["jumping"]=True
+                    self.solomon.jumping_counter=0                
+                    if joystick.isLeft(keys): self.solomon.jumping_dir=-1
+                    elif joystick.isRight(keys): self.solomon.jumping_dir=1
+                    else: self.solomon.jumping_dir=0
+                    self.solomon.jump_inc = self.solomon.jump_inc_start
+                    print ("start jump"+str(self.solomon.jumping_dir))
+                else:
+                    self.solomon.jumping_rest-=1
+
+        if self.solomon.current_state["jumping"]==True:
+            if self.solomon.jumping_counter>self.solomon.jumping_counter_max:
+                self.solomon.current_state["jumping"]=False
+                self.solomon.jumping_counter=0
+                print ("stop jump")
+            else:
+                self.solomon.jumping_counter+=1
+            
+        if self.solomon.current_state["jumping"]==True:
+            if (self.solomon.jumping_dir==1 and (self.solomon.current_state["cwright"]==True)) \
+            or (self.solomon.jumping_dir==-1 and (self.solomon.current_state["cwleft"]==True)):
+                self.solomon.x+=self.solomon.jumping_dir*self.solomon.step_inc
+
+            self.solomon.y+=round(self.solomon.jump_inc,2)
+            self.solomon.jump_inc*=self.solomon.jump_inc_falloff
+              
+        ##if self.solomon.current_state["jumping"]==True:
+        ##    if (self.solomon.jumping_dir==1 and (distanceRight>0.4 or self.solomon.current_state["cwright"]==True)) \
+        ##    or (self.solomon.jumping_dir==-1 and (distanceLeft>0.4 or self.solomon.current_state["cwleft"]==True)):
+        ##        self.solomon.x+=self.solomon.jumping_dir*self.solomon.step_inc
+        ##        print ("jumping and moving jumping dir: {0}, distanceRight {1}, distanceLeft {2}, grid left {3}, grid right {4}".format(self.solomon.jumping_dir,distanceRight,distanceLeft,left_grid_is,right_grid_is))
+        ##    self.solomon.y+=round(self.solomon.jump_inc,2)
+        ##    self.solomon.jump_inc*=self.solomon.jump_inc_falloff
+            
+        ##above = self.eval_grid(self.solomon_block_above)
+        ##distance_above = 1+(int(self.solomon.y-1+0.5))-(self.solomon.y-1+0.5)
+        ##
+        ##if self.solomon.current_state["jumping"]==True and \
+        ##    ( above in [ 'B','b','s' ] and distance_above>0.88): ##and ((distanceLeft<0.8 and self.solomon.facing==-1) or (distanceRight<0.8 and self.solomon.facing==1)) ):
+        ##    self.solomon.current_state["jumping"]=False
+        ##    print ("OUCH")
+        ##    if not above=='s':
+        ##        self.block_to_action=self.solomon_block_above
+        ##        self.block_swap(bump_only=True)
+        ##        
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        ##
+        
+        
+        # animate the walk cycle
         if self.solomon.current_state["walking"]:
             self.solomon.AG_walk.do()
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         return

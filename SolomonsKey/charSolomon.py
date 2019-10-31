@@ -22,13 +22,14 @@ class Solomon:
     jumping_counter = 0
     jumping_counter_max = 7
     jump_inc_start = 0.5
-    jump_inc = 0.2
-    jump_inc_falloff = 0.6
+    jump_inc = 0.4
+    jump_inc_falloff = 0.8
     step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
     jumping_rest_start=2 ##cycles to rest before jump
     fall_inc=0.1
+    fall_detect=0.01
     wand_rest=0
     wand_rest_start=8 ##cycles to rest before jump
     
