@@ -27,7 +27,7 @@ class Solomon:
     step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
-    jumping_rest_start=2 ##cycles to rest before jump
+    jumping_rest_start=4 ##cycles to rest before jump
     fall_inc=0.1
     fall_detect=0.01
     wand_rest=0
@@ -94,6 +94,7 @@ class Solomon:
         self.current_state["cwleft"]=False
         self.current_state["cwright"]=False
         self.current_state["canfall"]=False
+        self.current_state["headhurt"]=False
 
         self.x=sx
         self.y=sy
@@ -116,6 +117,14 @@ class Solomon:
 
         self.A_wandswish=Action(func=self.swish,min=-8,max=-1,cycle=False,reverseloop=False,init_tick=-6)
 
+
+    def set_x(self,x):
+        self.x=round(x,3)
+        print('set x {}'.format(self.x))##+" "+str(self.state_test_on()))
+        
+    def set_y(self,y):
+        self.y=round(y,3)
+        print('set y {}'.format(self.y))##+" "+str(self.state_test_on())+" "+str(self.jumping_rest))
 
     def state_test_on(self):
         return [k for k in self.current_state if self.current_state[k]==True]

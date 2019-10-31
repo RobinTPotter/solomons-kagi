@@ -75,7 +75,7 @@ class SolomonsKey:
     camera_sweep = 20
     joystick=Joystick()
     
-    def animate(self,FPS=32):
+    def animate(self,FPS=12):
 
         currentTime=time()
 
