@@ -21,9 +21,9 @@ class Solomon:
     det_size_y=0.6
     jumping_counter = 0
     jumping_counter_max = 7
-    jump_inc_start = 0.5
+    jump_inc_start = 0.4
     jump_inc = 0.4
-    jump_inc_falloff = 0.8
+    jump_inc_falloff = 0.9
     step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
