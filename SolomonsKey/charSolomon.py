@@ -20,15 +20,15 @@ class Solomon:
     det_size_x=0.4
     det_size_y=0.6
     jumping_counter = 0
-    jumping_counter_max = 7
-    jump_inc_start = 0.4
+    jumping_counter_max = 6
+    jump_inc_start = 0.5
     jump_inc = 0.4
     jump_inc_falloff = 0.9
     step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
     jumping_rest_start=4 ##cycles to rest before jump
-    fall_inc=0.1
+    fall_inc=0.2
     fall_detect=0.01
     wand_rest=0
     wand_rest_start=8 ##cycles to rest before jump
@@ -119,11 +119,11 @@ class Solomon:
 
 
     def set_x(self,x):
-        self.x=round(x,3)
+        self.x=round(x,2)
         print('set x {}'.format(self.x))##+" "+str(self.state_test_on()))
         
     def set_y(self,y):
-        self.y=round(y,3)
+        self.y=round(y,2)
         print('set y {}'.format(self.y))##+" "+str(self.state_test_on())+" "+str(self.jumping_rest))
 
     def state_test_on(self):

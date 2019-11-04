@@ -323,14 +323,17 @@ class Level:
 
         if self.solomon.current_state["canfall"]==False:
             if not int(self.solomon.y)==self.solomon.y:
+                print("integer problem {}".format(self.solomon.y))                
                 self.solomon.set_y(round(self.solomon.y ,0))
                 print("fixed {}".format(self.solomon.y))
+                if self.solomon.current_state["falling"]==True: self.solomon.current_state["falling"]=False
         
         
         self.calculate_states()
         
         # can fall state true and not swishing wand means can fall
         if self.solomon.current_state["canfall"] and self.solomon.current_state["wandswish"]==False:
+            print('falling')
             self.solomon.set_y(self.solomon.y-self.solomon.fall_inc)
 
         self.calculate_states()
@@ -386,6 +389,7 @@ class Level:
         
         if self.solomon.jumping_rest==0 and self.solomon.current_state["jumping"]==True:
             if self.solomon.current_state["headhurt"]==False:
+                print('jumping true, no head hurt {}'.format(self.solomon.y))
                 self.solomon.set_y(round(self.solomon.y + self.solomon.jump_inc,3))
                 self.solomon.jump_inc *= self.solomon.jump_inc_falloff
                 if self.solomon.jump_inc<0.01:
