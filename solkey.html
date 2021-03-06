@@ -1,0 +1,164 @@
+<html>
+<head>
+<style>
+div { font-size: 3px }
+</style>
+</head>
+<body onkeydown="keydown(event)" onkeyup="keyup(event)">
+<script>
+
+var level = [
+"222222222222",
+"200000000002",
+"200022000002",
+"200000222002",
+"200000000002",
+"202222200002",
+"202000200002",
+"202202222002",
+"200000000022",
+"222222222222"
+]
+
+
+level = level.reverse()
+
+var tile = 10
+var sol_size = 9
+
+var solx = 12, soly = 12
+
+var ll = 0
+for (var ll=0;ll<level.length;ll++) {
+    var cc = 0
+    var l = level[ll].split('')
+    for (var cc=0;cc<l.length;cc++) {
+        if (l[cc]=='2') {
+            var b = document.createElement('div')
+            b.style=`position:absolute; background-color:black; left:${cc*tile}px; top:${(level.length-ll-1)*tile}px; width:${tile}px; height:${tile}px;`
+            document.body.appendChild(b)
+        }
+    }
+}
+
+function blockat(x,y) { return level[y].split('')[x] }
+
+var sprite_sol = document.createElement('div')
+document.body.appendChild(sprite_sol)
+
+
+keys= {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+}
+
+sol_dir = 1
+sol_jump = 0
+sol_crouch = 0
+sol_step = 1
+sol_jump_inc = 2
+sol_jump_limit = Math.floor((tile+4) /sol_jump_inc)
+sol_jump_rest = 0 
+sol_jump_rest_limit = 3
+sol_fall_inc = 1
+
+function tick() {
+
+    if (keys.down) sol_crouch=1; else sol_crouch=0
+
+    left_headwall = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+    left_footwall = Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+    right_headwall = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+    right_footwall = Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+
+    if (keys.left) {
+        sol_dir = -1
+        if  (sol_crouch==0 && left_footwall==0 && left_headwall==0) solx-=sol_step
+    }
+    if (keys.right) {
+        sol_dir = 1
+        if (sol_crouch==0 && right_footwall==0 && right_headwall==0) solx+=sol_step
+    }
+
+
+    floating=false
+    leftfootfloor = Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor(solx/tile))])
+    rightfootfloor = Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+    nofloor=(leftfootfloor==0 && rightfootfloor==0 )
+    
+    if ((soly%tile)!=0 || nofloor ) floating=true
+    
+    if (sol_crouch==0 && keys.up && !floating ) {
+        if (sol_jump==0) {
+            sol_jump=sol_jump_limit
+            sol_jump_rest = sol_jump_rest_limit
+        }
+    }
+    
+    if (sol_jump>0 && sol_jump_rest==0) {
+        sol_jump--
+            
+        leftheadceiling = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor(solx/tile))])
+        rightheadceiling = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+        
+        if (leftheadceiling==0 && rightheadceiling==0) soly+=sol_jump_inc
+        else sol_jump=0        
+        
+        sol_crouch = 0 ///decativate crouch
+        
+    } else {
+        sol_jump_rest--
+    }
+
+
+    if (sol_jump==0 && floating) {
+        soly-=sol_fall_inc
+        sol_crouch = 0 ///decativate crouch
+    }
+
+    update()
+
+    setTimeout(tick,30)
+}
+
+tick()
+
+function update() {
+
+    if (sol_crouch==0) {
+        sprite_sol.style=`position:absolute; background-color:red; left:${solx}px; top:${(level.length*tile-soly-sol_size)}px; width:${sol_size}px; height:${sol_size}px;`
+        sprite_sol.innerHTML=`${solx} ${soly}`
+    } else {
+        sprite_sol.style=`position:absolute; background-color:red; left:${solx}px; top:${(level.length*tile-soly-sol_size+sol_crouch*2)}px; width:${sol_size}px; height:${sol_size}px;`
+    }
+    
+}
+
+function keydown(e) {
+    if (e.code=='ArrowLeft') keys.left = true
+    else if (e.code=='ArrowRight') keys.right = true
+    
+    if (e.code=='ArrowUp') keys.up = true
+    else if (e.code=='ArrowDown') keys.down = true
+}
+
+function keyup(e) {
+    if (e.code=='ArrowLeft') keys.left = false
+    else if (e.code=='ArrowRight') keys.right = false
+    
+    if (e.code=='ArrowUp') keys.up = false
+    else if (e.code=='ArrowDown') keys.down = false
+}
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
