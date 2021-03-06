@@ -65,7 +65,7 @@ class Joystick:
         self.keys[self.fire]=False
 
     def register(self,ch,down):
-        print ("register "+str(ch)+str(type(ch)))
+        print(("register "+str(ch)+str(type(ch))))
         extra=""
         #if type(ch) is str:
         #    extra=str(ord(ch))
@@ -155,10 +155,10 @@ class Thing:
             #print self.menuindex
             #return
 
-        elif self.joystick.isKey(27): ##escape edit mode
+        elif self.joystick.isKey(b'\x1b'): ##escape edit mode
             self.state="browse"
             if self.state=="edit": self.menuindex=self.edititem
-            print (str(self.menuindex))
+            print((str(self.menuindex)))
             #return
 
         elif self.state=="browse":
@@ -166,7 +166,7 @@ class Thing:
 
 
 
-            if self.joystick.isKey("w"): ##write out
+            if self.joystick.isKey(b'w'): ##write out
 
                 try:
                     f=open(file_name,"w")
@@ -174,13 +174,13 @@ class Thing:
                         f.write(ll+"\n")
                     f.write("\n")
                     f.close()
-                    print("written out file "+str(file_name))
+                    print(("written out file "+str(file_name)))
                     #return
 
                 except Exception as ex:
-                    print ("bugger, "+str(file_name)+" not written out")
+                    print(("bugger, "+str(file_name)+" not written out"))
 
-            elif self.joystick.isKey("l"): ##load in 
+            elif self.joystick.isKey(b'l'): ##load in 
 
                 try:
                     f=open(file_name,"r")
@@ -189,7 +189,7 @@ class Thing:
                         if not (len(ll)==0 or ll==""): tmp.append(ll)
 
                     f.close()
-                    print ("successfully read "+str(file_name))
+                    print(("successfully read "+str(file_name)))
 
                     ##had to to this wasn't updateing other wise
                     self.menuindex=0
@@ -198,37 +198,37 @@ class Thing:
 
 
                 except Exception as ex:
-                    print ("bugger, file "+str(file_name)+" not read")
+                    print(("bugger, file "+str(file_name)+" not read"))
 
                 #return
 
-            elif self.joystick.isKey("a"): ##add object
+            elif self.joystick.isKey(b'a'): ##add object
                 self.state="add"
                 self.menu=["COMMENT","PUSH-POP","TRANSLATE","SCALE","CUBE","SPHERE","POLYGON","LINES","POINT","CONE","DISC","CYLINDER","ROTATE"]
-                for cc in colours.keys(): self.menu.append("COLOUR_"+cc.upper())
+                for cc in list(colours.keys()): self.menu.append("COLOUR_"+cc.upper())
                 self.edititem=self.menuindex
                 self.menuindex=0
                 self.lastMenu=" "
                 #return
 
-            elif self.joystick.isKey("u"): ##move up
+            elif self.joystick.isKey(b'u'): ##move up
                 if len(tmp)>1: tmp.insert((self.menuindex-1)%(len(tmp)),tmp.pop(self.menuindex))
                 if len(self.menu)>0: self.menuindex=( self.menuindex-1 ) % len(self.menu)
                 self.lastMenu=" "
                 #return
 
-            elif self.joystick.isKey("d"): ##move down
+            elif self.joystick.isKey(b'd'): ##move down
                 if len(tmp)>1: tmp.insert((self.menuindex+1)%(len(tmp)),tmp.pop(self.menuindex))
                 if len(self.menu)>0: self.menuindex=( self.menuindex+1 ) % len(self.menu)
                 self.lastMenu=" "
                 #return
 
-            elif self.joystick.isKey("c"): ##copy in place
+            elif self.joystick.isKey(b'c'): ##copy in place
                 tmp.insert(self.menuindex,tmp[self.menuindex])
                 self.lastMenu=" "
                 #return
 
-            elif self.joystick.isKey(13) and len(tmp)>0: ##edit mode
+            elif self.joystick.isKey(b'\r') and len(tmp)>0: ##edit mode
 
                 self.state="edit"
                 if self.menuindex>=len(self.menu): self.menuindex=0
@@ -252,11 +252,11 @@ class Thing:
                     #return
 
 
-            elif self.joystick.isKey(8) and len(tmp)>0: ##delete
+            elif self.joystick.isKey(b'\x7f') and len(tmp)>0: ##delete
                 print ("delete! started"                           )
-                print ("delete! "+str(self.menuindex)              )
-                print ("delete! "+str(self.menu[self.menuindex])   )
-                print ("delete! "+str(tmp[self.menuindex])         )
+                print(("delete! "+str(self.menuindex)              ))
+                print(("delete! "+str(self.menu[self.menuindex])   ))
+                print(("delete! "+str(tmp[self.menuindex])         ))
                 
                 
                 if str(self.menu[self.menuindex])=="glPopMatrix()" or str(self.menu[self.menuindex])=="glEnd()": 
@@ -299,7 +299,7 @@ class Thing:
 
         elif self.state=="add":
 
-            if self.joystick.isKey(13):
+            if self.joystick.isKey(b'\r'):
 
                 if self.menu[self.menuindex]=="CUBE":
                     tmp.insert(self.edititem,"glutSolidCube(0.5) ###size")  #+="glPushMatrix()\nglutSolidCube(0.5)\nglPopMatrix()\n"
@@ -434,17 +434,19 @@ class Thing:
         
         editing_value=float(values[self.menuindex])
 
-        val=0.1
+        val=0.100
         if self.joystick.isShift and not self.joystick.isControl: val=1
         elif self.joystick.isControl and not self.joystick.isShift: val=0.01
         elif self.joystick.isControl and self.joystick.isShift: val=10
         editing_value+=val*direction
+        editing_value=round(editing_value,6)
+        print("hello {}".format(editing_value))
 
         old=self.editing
         m=None
         mit=re.finditer("-{0,1}[0-9\.]+",old)
         for i in range(0,self.menuindex+1):
-            m=mit.next()
+            m=next(mit)
 
         #print "m: "+str(m)+" "+str(dir(m))+" "+str(m.group())+" ms:"+str(m.start())+ "me:"+str(m.end())
 
@@ -729,7 +731,7 @@ class Thing:
 
         except Exception as e:
 
-            print (str(traceback.print_exc(file=sys.stdout)))
+            print((str(traceback.print_exc(file=sys.stdout))))
 
             print ("Bollocks! Dumping\n----------------------------\n\n")
             for f in self.temp:
@@ -854,7 +856,7 @@ class Thing:
 
 
     def reshape(self,width,height):
-        print ("hello reshape "+str((width,height)))
+        print(("hello reshape "+str((width,height))))
         self.HEIGHT=float(height)
         self.WIDTH=float(width)
         glViewport(0,0,int(self.WIDTH),int(self.HEIGHT)        )
@@ -880,7 +882,7 @@ class Thing:
         if mod&GLUT_ACTIVE_ALT==GLUT_ACTIVE_ALT: self.joystick.isAlt=True
         if mod&GLUT_ACTIVE_SHIFT==GLUT_ACTIVE_SHIFT: self.joystick.isShift=True
 
-        print (str(c))
+        print((str(c)))
         if type(c) is str: self.joystick.register(c.lower(),True)
         else: self.joystick.register(c,True)
 

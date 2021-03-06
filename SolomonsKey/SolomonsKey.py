@@ -111,7 +111,6 @@ class SolomonsKey:
         # self.camera_sweep is the "speed" at which transitions are being made
         self.cam_pos = self.cam_pos.add( self.cam_pos_target.sub(self.cam_pos).mult(1/self.camera_sweep) )
         self.cam_focus = self.cam_focus.add( self.cam_focus_target.sub(self.cam_focus).mult(1/self.camera_sweep) )
-        
         self.lastFrameTime=time()
 
     # if windowed ensure aspect ratio correct
@@ -173,7 +172,6 @@ class SolomonsKey:
         print("making model lists")
         MakeLists()
 
-        
         print("ignore key repeat")
         glutIgnoreKeyRepeat(1)
 

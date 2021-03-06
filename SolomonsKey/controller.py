@@ -92,18 +92,15 @@ class Level:
                     self.solomon=Solomon(cc,rr,self)
                     self.grid[rr][cc]="."
                     self.solomon.A_wandswish.callback=self.block_swap
-                    
                 elif c=="4":
                     self.door=[cc,rr]
                     self.grid[rr][cc]="."
-
                 elif c=="k":
                     ns=Sprite(cc,rr+0.5)
                     ns.setDrawFuncToList(lists["green_key"])
                     ns.collision_action=self.key_detected_something_test
                     self.sprites.append(ns)
                     self.grid[rr][cc]="."
-
                 elif not c in ["b","B","s"]:
                     self.grid[rr][cc]="."
 
@@ -133,10 +130,8 @@ class Level:
         yy = self.block_to_action[1]
         xx = self.block_to_action[0]
         ch = self.grid[yy][xx]
-        
         print('yy {} xx {} ch {} '.format(yy,xx,ch))
-        
-        
+
         if not bump_only:
             #wand flare!
             crouch=0.5
@@ -149,10 +144,9 @@ class Level:
         distance = 0
         if self.solomon.facing==-1: distance=distanceLeft
         elif self.solomon.facing==1: distance=distanceRight
-        
         print('distance {}'.format(distance))
         #check not in block space when casting
-        
+
         if distance > 1.1:
             if bump_only:
                 if ch=="b":
@@ -176,7 +170,7 @@ class Level:
 
     def grid_cell(self,coords):
         x=coords[0]
-        y=int(coords[1])        
+        y=int(coords[1])
         dx = round(x - int(x),3)
         #print('in {} {} dx {}'.format(x,y,dx))
         if dx>0.5: x = int(x) + int(1)
@@ -184,76 +178,70 @@ class Level:
         return [x,y]
 
 
+    def set_state(self,state,value=True):
+        self.solomon.current_state[state]=value
+        #print('state {} set to {}'.format(state,value))
+
     def calculate_states(self):
-       
         if  False:
-            print('solomon x,y: {0},{1}'.format(self.solomon.x,self.solomon.y))  
+            print('solomon x,y: {0},{1}'.format(self.solomon.x,self.solomon.y))
             gx,gy=int(self.solomon.x),int(self.solomon.y)
-            print('solomon gx,gy: {0},{1}'.format(gx,gy))            
+            print('solomon gx,gy: {0},{1}'.format(gx,gy))
             print('grid on: {0}'.format(self.grid[gy][gx]))
             print('grid below: {0}'.format(self.grid[gy-1][gx]))
-        
+
         self.solomon.drawSolProperly=True #int((self.counter)/20)%2==0
-        
+
         #under box
         twitch_left = 0.01
         # so the box presses to right edge flush
         sol_bottom_edge_x1 = self.solomon.x  - self.solomon.size_x/2 + twitch_left
         sol_bottom_edge_x2 = self.solomon.x  + self.solomon.size_x/2
-        sol_bottom_edge_y2 = self.solomon.y - self.solomon.fall_detect    
-        sol_top_edge_y2 = self.solomon.y + self.solomon.size_y       
+        sol_bottom_edge_y2 = self.solomon.y - self.solomon.fall_detect
+        sol_top_edge_y2 = self.solomon.y + self.solomon.size_y
         sol_top_edge_y2_jumping = self.solomon.y + self.solomon.size_y + 0.2
-        
         #grid cell for below left and right
         sol_blockbelow_coord_x1 = self.grid_cell([sol_bottom_edge_x1,sol_bottom_edge_y2])
         sol_blockbelow_coord_x2 = self.grid_cell([sol_bottom_edge_x2,sol_bottom_edge_y2])
-        
         #grid cell for above left and right
         sol_blockabove_coord_x1 = self.grid_cell([sol_bottom_edge_x1,sol_top_edge_y2_jumping])
         sol_blockabove_coord_x2 = self.grid_cell([sol_bottom_edge_x2,sol_top_edge_y2_jumping])
-        
         #grid cell for right top and bottom
         sol_blockright_coord_y1 = self.grid_cell([sol_bottom_edge_x2+self.solomon.step_inc,sol_top_edge_y2])
         sol_blockright_coord_y2 = self.grid_cell([sol_bottom_edge_x2+self.solomon.step_inc,self.solomon.y])
-        
         #grid cell for left top and bottom
         sol_blockleft_coord_y1 = self.grid_cell([sol_bottom_edge_x1-self.solomon.step_inc,sol_top_edge_y2])
         sol_blockleft_coord_y2 = self.grid_cell([sol_bottom_edge_x1-self.solomon.step_inc,self.solomon.y])
-        
         #print ('{} {}'.format(sol_blockbelow_coord_x1,sol_blockbelow_coord_x2))
-        
-        
         #set state on behalf of block below
+
         if  self.grid[sol_blockbelow_coord_x1[1]][sol_blockbelow_coord_x1[0]]=='.' and \
             self.grid[sol_blockbelow_coord_x2[1]][sol_blockbelow_coord_x2[0]]=='.':
-            self.solomon.current_state["canfall"]=True
+            self.set_state("canfall")
         else:
-            self.solomon.current_state["canfall"]=False
-        
-        
+            self.set_state("canfall", False)
+
         #set state on behalf of block above
         if  self.grid[sol_blockabove_coord_x1[1]][sol_blockabove_coord_x1[0]]=='.' and \
             self.grid[sol_blockabove_coord_x2[1]][sol_blockabove_coord_x2[0]]=='.':
-            self.solomon.current_state["headhurt"]=False
+            self.set_state("headhurt", False)
         else:
-            self.solomon.current_state["headhurt"]=True
-            #print ("                            head hurt is true")
-        
-        
+            self.set_state("headhurt")
+
         #set state on behalf of right top and bottom
         if  self.grid[sol_blockright_coord_y1[1]][sol_blockright_coord_y1[0]]=='.' and \
             self.grid[sol_blockright_coord_y2[1]][sol_blockright_coord_y2[0]]=='.':
-            self.solomon.current_state["cwright"]=True
+            self.set_state("cwright")
         else:
-            self.solomon.current_state["cwright"]=False
-        
+            self.set_state("cwright", False)
+
         #set state on behalf of left top and bottom
         if  self.grid[sol_blockleft_coord_y1[1]][sol_blockleft_coord_y1[0]]=='.' and \
             self.grid[sol_blockleft_coord_y2[1]][sol_blockleft_coord_y2[0]]=='.':
-            self.solomon.current_state["cwleft"]=True
+            self.set_state("cwleft")
         else:
-            self.solomon.current_state["cwleft"]=False
-        
+            self.set_state("cwleft", False)
+
         #stickers for underneath (floor) detection
         #self.solomon.stickers.append([sol_bottom_edge_x1,sol_bottom_edge_y2,0,'green'])
         #self.solomon.stickers.append([sol_bottom_edge_x2,sol_bottom_edge_y2,0,'blue'])
@@ -262,15 +250,15 @@ class Level:
         #stickers for underneath (head crash) detection
         self.solomon.stickers.append([sol_bottom_edge_x1,sol_top_edge_y2,0,'green'])
         self.solomon.stickers.append([sol_bottom_edge_x2,sol_top_edge_y2,0,'blue'])
-        
+
         #stickers for right side solomon (wall) detect
         #self.solomon.stickers.append([sol_bottom_edge_x2,sol_top_edge_y2,0,'green'])
         #self.solomon.stickers.append([sol_bottom_edge_x2,self.solomon.y,0,'blue'])
-        
+
         #stickers for left side solomon (wall) detect
         #self.solomon.stickers.append([sol_bottom_edge_x1,sol_top_edge_y2,0,'green'])
         #self.solomon.stickers.append([sol_bottom_edge_x1,self.solomon.y,0,'blue'])
-        
+
         #stickers for showing which block is investigating
         #self.solomon.stickers.append(sol_blockbelow_coord_x1+[0.1,'green'])
         #self.solomon.stickers.append(sol_blockbelow_coord_x2+[0,'blue'])
@@ -285,11 +273,7 @@ class Level:
 
         self.solomon.stickers.append([self.solomon.x,self.solomon.y,0,"white"])
         """ TODO redo current_state was rubbish anyway """
-     
-     
         self.calculate_states()
-     
-     
         #wand is used to hover, so comes before fall and walk
         if joystick.isFire(keys):
             print('                            fire')
@@ -299,7 +283,7 @@ class Level:
                 if self.solomon.wand_rest==0:
                     self.solomon.wand_rest=self.solomon.wand_rest_start
                     #start swish
-                    self.solomon.current_state["wandswish"]=True   
+                    self.set_state("wandswish")
                     print ("                          swish")
                     if self.solomon.facing==-1: self.block_to_action = self.grid_cell([self.solomon.x-1,self.solomon.y])
                     elif self.solomon.facing==1:
@@ -308,25 +292,28 @@ class Level:
                         self.block_to_action = self.grid_cell([self.solomon.x+1,self.solomon.y])
                     if self.solomon.current_state["crouching"]==True:
                         self.block_to_action=[self.block_to_action[0],self.block_to_action[1]-1]
-                    
+
             else:
                 #continue swish
                 print ("                        blah")
                 pass
-        
-        
+
         self.calculate_states()
-        
+
         # decrease wand swish counter
         if self.solomon.wand_rest>0:
             self.solomon.wand_rest-=1
 
         if self.solomon.current_state["canfall"]==False:
-            if not int(self.solomon.y)==self.solomon.y:
-                print("integer problem {}".format(self.solomon.y))                
-                self.solomon.set_y(round(self.solomon.y ,0))
-                print("fixed {}".format(self.solomon.y))
-                if self.solomon.current_state["falling"]==True: self.solomon.current_state["falling"]=False
+            #if not int(self.solomon.y)==self.solomon.y:
+            #    print("integer problem {}".format(self.solomon.y))
+            #    self.solomon.set_y(round(self.solomon.y ,0))
+            #    print("fixed {}".format(self.solomon.y))
+            if self.solomon.current_state["falling"]==True:
+                self.set_state("falling", False)
+            if self.solomon.current_state["jumping"]==True:
+                self.set_state("jumping", False)
+                print("jumping set false")
         
         
         self.calculate_states()
@@ -346,13 +333,13 @@ class Level:
         # only offsets the wand target
         self.solomon.current_state["crouching"]=False
         if joystick.isDown(keys):
-            self.solomon.current_state["crouching"]=True            
+            self.set_state("crouching")
             
         # if not crouching and keys pressed try walking right, animate but move only if can    
         if joystick.isRight(keys):
             self.solomon.facing=1
             if self.solomon.current_state["crouching"]==False:
-                self.solomon.current_state["walking"]=True
+                self.set_state("walking")
                 if self.solomon.current_state["cwright"]:
                     self.solomon.set_x(self.solomon.x+self.solomon.step_inc)
         
@@ -362,7 +349,7 @@ class Level:
         if joystick.isLeft(keys):
             self.solomon.facing=-1
             if self.solomon.current_state["crouching"]==False:
-                self.solomon.current_state["walking"]=True
+                self.set_state("walking")
                 if self.solomon.current_state["cwleft"]:
                     self.solomon.set_x(self.solomon.x-self.solomon.step_inc)
  
@@ -378,8 +365,11 @@ class Level:
             self.solomon.current_state["canfall"]==False and \
             self.solomon.current_state["headhurt"]==False:
             if joystick.isUp(keys):
-                self.solomon.current_state["jumping"]=True
+                self.set_state("jumping")
                 self.solomon.jumping_rest=self.solomon.jumping_rest_start
+        
+        print ("jumping rest {}".format(self.solomon.jumping_rest))
+        
         
         if self.solomon.jumping_rest>0:
             self.solomon.jumping_rest-=1
@@ -388,14 +378,17 @@ class Level:
         self.calculate_states()
         
         if self.solomon.jumping_rest==0 and self.solomon.current_state["jumping"]==True:
+            print("jumping rest is 0 and jumping is true")
             if self.solomon.current_state["headhurt"]==False:
                 print('jumping true, no head hurt {}'.format(self.solomon.y))
-                self.solomon.set_y(round(self.solomon.y + self.solomon.jump_inc,3))
-                self.solomon.jump_inc *= self.solomon.jump_inc_falloff
-                if self.solomon.jump_inc<0.01:
-                    self.solomon.current_state["jumping"]=False
+                self.solomon.set_y(round(self.solomon.y + self.solomon.jump_inc_falloff,3))
+                #if self.solomon.jump_inc<0.01:
+                #    self.set_state("jumping", False)
             else:
-                self.solomon.current_state["jumping"]=False
+                self.set_state("jumping", False)
+                print("jumping set false")
+        
+        self.calculate_states()
         
         # animate the walk cycle
         if self.solomon.current_state["walking"]:

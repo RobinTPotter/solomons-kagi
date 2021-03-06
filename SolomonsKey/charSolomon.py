@@ -21,9 +21,9 @@ class Solomon:
     det_size_y=0.6
     jumping_counter = 0
     jumping_counter_max = 6
-    jump_inc_start = 0.5
-    jump_inc = 0.4
-    jump_inc_falloff = 0.9
+    jump_inc_start = 0.1
+    jump_inc = 0.1
+    jump_inc_falloff = -0.1
     step_inc = 0.050
     jumping_dir=0
     jumping_rest=0
@@ -32,7 +32,6 @@ class Solomon:
     fall_detect=0.01
     wand_rest=0
     wand_rest_start=8 ##cycles to rest before jump
-    
 
     bound=0.3 #this is his bounding sphere
     step=0.100
@@ -121,7 +120,7 @@ class Solomon:
     def set_x(self,x):
         self.x=round(x,2)
         print('set x {}'.format(self.x))##+" "+str(self.state_test_on()))
-        
+
     def set_y(self,y):
         self.y=round(y,2)
         print('set y {}'.format(self.y))##+" "+str(self.state_test_on())+" "+str(self.jumping_rest))
@@ -158,8 +157,7 @@ class Solomon:
         #    glTranslate(0,-0.15,0)
 
         #main displacement
-        glTranslate(self.x,self.y,0)    
-        
+        glTranslate(self.x,self.y,0)
 
         if self.drawSolProperly==False:
             #size box for edge/falling etc
@@ -170,7 +168,7 @@ class Solomon:
             glScale(self.size_x, self.size_y,1.0)
             glutWireCube(1)
             glPopMatrix()
-            
+
             #detection box for enemies/items
             glPushMatrix()
             #glTranslate(self.x,self.y,0)
@@ -179,12 +177,12 @@ class Solomon:
             glScale(self.det_size_x, self.det_size_y,1.0)
             glutWireCube(1)
             glPopMatrix()
-        else:            
+        else:
             #offset model
-            glTranslate(0,0.35,0)            
+            glTranslate(0,0.35,0)
             #scale down character
             glScale(0.3,0.3,0.3)
-        
+
         #rotate to direction facing
         if self.facing==-1: glRotatef(180,0,1,0)
 
@@ -197,7 +195,7 @@ class Solomon:
 
         #############################entering crouch section###############################
         glPushMatrix()
-        
+
         if "crouching" in self.state_test_on(): glTranslate(0,0,-0.4)
         if "walking" in self.state_test_on(): glRotatef(-8.0*float(self.AG_walk.value("wobble")),0.0,0.0,1.0)
 
