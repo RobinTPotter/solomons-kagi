@@ -8,23 +8,23 @@ div { font-size: 3px }
 <script>
 
 var level = [
-"222222222222",
-"200000000002",
-"200022000002",
-"200000222002",
-"200000000002",
-"202222200002",
-"202000200002",
-"202202222002",
-"200000000022",
-"222222222222"
+"333333333333",
+"300000000003",
+"300022000003",
+"300000222003",
+"300000000003",
+"302222200003",
+"302000200003",
+"302202222003",
+"300000000023",
+"333333333333"
 ]
 
 
 level = level.reverse()
 
 var tile = 10
-var sol_size = 9
+var sol_size = 8
 
 var solx = 12, soly = 12
 
@@ -35,7 +35,13 @@ for (var ll=0;ll<level.length;ll++) {
     for (var cc=0;cc<l.length;cc++) {
         if (l[cc]=='2') {
             var b = document.createElement('div')
+            b.id = `block_cc${cc}ll${ll}`
             b.style=`position:absolute; background-color:black; left:${cc*tile}px; top:${(level.length-ll-1)*tile}px; width:${tile}px; height:${tile}px;`
+            document.body.appendChild(b)
+        } else if (l[cc]=='3') {
+            var b = document.createElement('div')
+            b.id = `block_cc${cc}ll${ll}`
+            b.style=`position:absolute; background-color:blue; left:${cc*tile}px; top:${(level.length-ll-1)*tile}px; width:${tile}px; height:${tile}px;`
             document.body.appendChild(b)
         }
     }
@@ -63,15 +69,66 @@ sol_jump_limit = Math.floor((tile+4) /sol_jump_inc)
 sol_jump_rest = 0 
 sol_jump_rest_limit = 3
 sol_fall_inc = 1
+sol_wand = 0
+sol_wand_limit = 5
+
+
+
+function sol_tile_at_left_head() {
+    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+}
+
+function sol_tile_at_left_foot() {
+    return Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+}
+
+function sol_tile_at_right_head() {
+    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+}
+
+function sol_tile_at_right_foot() {
+    return Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+}
+
+function sol_tile_at_left_foot_floor() {
+    return Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor(solx/tile))])
+}
+
+function sol_tile_at_right_foot_floor() {
+    return Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+}
+
+function sol_tile_at_left_head_ceiling() {
+    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor(solx/tile))])
+}
+
+function sol_tile_at_right_head_ceiling() {
+    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+}
+
+function sol_block() {
+    return [Math.floor((soly)/tile)
+    ,(Math.floor((solx)/tile))]
+}
+
+function sol_tile_dist_right_head() {
+    d = sol_size - ((solx+sol_size) % tile)
+    if (d==sol_size) d=0
+    return d
+}
+
+function sol_tile_dist_left_head() {
+    return (solx) % tile
+}
 
 function tick() {
 
     if (keys.down) sol_crouch=1; else sol_crouch=0
 
-    left_headwall = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
-    left_footwall = Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
-    right_headwall = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
-    right_footwall = Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+    left_headwall = sol_tile_at_left_head()
+    left_footwall = sol_tile_at_left_foot()
+    right_headwall = sol_tile_at_right_head()
+    right_footwall = sol_tile_at_right_foot()
 
     if (keys.left) {
         sol_dir = -1
@@ -84,8 +141,8 @@ function tick() {
 
 
     floating=false
-    leftfootfloor = Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor(solx/tile))])
-    rightfootfloor = Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+    leftfootfloor = sol_tile_at_left_foot_floor()
+    rightfootfloor = sol_tile_at_right_foot_floor()
     nofloor=(leftfootfloor==0 && rightfootfloor==0 )
     
     if ((soly%tile)!=0 || nofloor ) floating=true
@@ -100,8 +157,9 @@ function tick() {
     if (sol_jump>0 && sol_jump_rest==0) {
         sol_jump--
             
-        leftheadceiling = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor(solx/tile))])
-        rightheadceiling = Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+        leftheadceiling = sol_tile_at_left_head_ceiling()
+        rightheadceiling = sol_tile_at_right_head_ceiling()
+        
         
         if (leftheadceiling==0 && rightheadceiling==0) soly+=sol_jump_inc
         else sol_jump=0        
@@ -112,11 +170,57 @@ function tick() {
         sol_jump_rest--
     }
 
-
     if (sol_jump==0 && floating) {
         soly-=sol_fall_inc
         sol_crouch = 0 ///decativate crouch
     }
+
+    if (sol_wand==0) {
+        if (keys.fire) {
+            sol_wand = sol_wand_limit
+        }
+    } else {
+        sol_wand--
+        if (sol_wand==0) {
+            console.log('wand!', sol_tile_dist_left_head(), sol_tile_dist_right_head())
+            block = sol_block()
+            console.log(block)
+            block_x = block[1]+sol_dir
+            block_y = block[0]-sol_crouch
+            if (sol_dir==1) {
+                if (sol_tile_dist_right_head()>0) {
+                    block_x++
+                } 
+            } else if (sol_dir==-1) {
+                if (sol_tile_dist_left_head()>0) {
+                    //block_x--
+                } 
+            }
+            level_block = Number(level[block_y].split('')[block_x])
+            console.log(level_block)
+            if (level_block==0) {
+                l = level[block_y]
+                l2 = l.split('')
+                l2[block_x] = 2
+                level[block_y]=l2.join('')
+                console.log(block_x, block_y)
+                var b = document.createElement('div')
+                b.id = `block_cc${block_x}ll${block_y}`
+                b.style=`position:absolute; background-color:black; left:${block_x*tile}px; top:${(level.length-block_y-1)*tile}px; width:${tile}px; height:${tile}px;`
+                document.body.appendChild(b)
+            } else if (level_block<3) {
+                l = level[block_y]
+                l2 = l.split('')
+                l2[block_x] = 0
+                level[block_y]=l2.join('')
+                console.log(block_x, block_y)
+                var b = document.getElementById(`block_cc${block_x}ll${block_y}`)
+                //b.style=`position:absolute; background-color:black; left:${block_x*tile}px; top:${(level.length-block_y-1)*tile}px; width:${tile}px; height:${tile}px;`
+                document.body.removeChild(b)
+            }
+        }
+    }
+
 
     update()
 
@@ -142,6 +246,8 @@ function keydown(e) {
     
     if (e.code=='ArrowUp') keys.up = true
     else if (e.code=='ArrowDown') keys.down = true
+    
+    if (e.code=='ControlRight') keys.fire = true
 }
 
 function keyup(e) {
@@ -150,6 +256,8 @@ function keyup(e) {
     
     if (e.code=='ArrowUp') keys.up = false
     else if (e.code=='ArrowDown') keys.down = false
+    
+    if (e.code=='ControlRight') keys.fire = false
 }
 
 
