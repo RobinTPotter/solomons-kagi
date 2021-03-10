@@ -24,7 +24,7 @@ var level = [
 level = level.reverse()
 
 var tile = 10
-var sol_size = 8
+var sol_size = 6
 
 var solx = 12, soly = 12
 
@@ -107,7 +107,7 @@ function sol_tile_at_right_head_ceiling() {
 }
 
 function sol_block() {
-    return [Math.floor((soly)/tile)
+    return [Math.floor((soly+sol_size/2)/tile)
     ,(Math.floor((solx)/tile))]
 }
 
@@ -145,7 +145,7 @@ function tick() {
     rightfootfloor = sol_tile_at_right_foot_floor()
     nofloor=(leftfootfloor==0 && rightfootfloor==0 )
     
-    if ((soly%tile)!=0 || nofloor ) floating=true
+    if ((soly%tile)!=0 || nofloor ) floating=true     
     
     if (sol_crouch==0 && keys.up && !floating ) {
         if (sol_jump==0) {
@@ -170,7 +170,7 @@ function tick() {
         sol_jump_rest--
     }
 
-    if (sol_jump==0 && floating) {
+    if (sol_jump==0 && floating && sol_wand==0) {
         soly-=sol_fall_inc
         sol_crouch = 0 ///decativate crouch
     }
