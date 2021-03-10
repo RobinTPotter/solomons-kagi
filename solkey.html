@@ -8,16 +8,16 @@ div { font-size: 3px }
 <script>
 
 var level = [
-"333333333333",
-"300000000003",
-"300022000003",
-"300000222003",
-"300000000003",
-"302222200003",
-"302000200003",
-"302202222003",
-"300000000023",
-"333333333333"
+"333333333333".split(''),
+"300000000003".split(''),
+"300022000003".split(''),
+"300000222003".split(''),
+"300000000003".split(''),
+"302222200003".split(''),
+"302000200003".split(''),
+"302202222003".split(''),
+"300000000023".split(''),
+"333333333333".split('')
 ]
 
 
@@ -25,13 +25,26 @@ level = level.reverse()
 
 var tile = 10
 var sol_size = 6
-
 var solx = 12, soly = 12
+
+sol_dir = 1
+sol_jump = 0
+sol_crouch = 0
+sol_step = 1
+sol_jump_inc = 2
+sol_jump_limit = Math.floor((tile+4) /sol_jump_inc)
+sol_jump_rest = 0 
+sol_jump_rest_limit = 3
+sol_fall_inc = 2
+sol_wand = 0
+sol_wand_limit = 5
+
+
 
 var ll = 0
 for (var ll=0;ll<level.length;ll++) {
     var cc = 0
-    var l = level[ll].split('')
+    var l = level[ll]
     for (var cc=0;cc<l.length;cc++) {
         if (l[cc]=='2') {
             var b = document.createElement('div')
@@ -47,7 +60,7 @@ for (var ll=0;ll<level.length;ll++) {
     }
 }
 
-function blockat(x,y) { return level[y].split('')[x] }
+function blockat(x,y) { return level[y][x] }
 
 var sprite_sol = document.createElement('div')
 document.body.appendChild(sprite_sol)
@@ -60,50 +73,39 @@ keys= {
     right: false
 }
 
-sol_dir = 1
-sol_jump = 0
-sol_crouch = 0
-sol_step = 1
-sol_jump_inc = 2
-sol_jump_limit = Math.floor((tile+4) /sol_jump_inc)
-sol_jump_rest = 0 
-sol_jump_rest_limit = 3
-sol_fall_inc = 1
-sol_wand = 0
-sol_wand_limit = 5
 
 
 
 function sol_tile_at_left_head() {
-    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+    return Number(level[Math.floor((soly+sol_size)/tile)][(Math.floor((solx-sol_step)/tile))])
 }
 
 function sol_tile_at_left_foot() {
-    return Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx-sol_step)/tile))])
+    return Number(level[Math.floor((soly)/tile)][(Math.floor((solx-sol_step)/tile))])
 }
 
 function sol_tile_at_right_head() {
-    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+    return Number(level[Math.floor((soly+sol_size)/tile)][(Math.floor((solx+sol_size)/tile))])
 }
 
 function sol_tile_at_right_foot() {
-    return Number(level[Math.floor((soly)/tile)].split('')[(Math.floor((solx+sol_size)/tile))])
+    return Number(level[Math.floor((soly)/tile)][(Math.floor((solx+sol_size)/tile))])
 }
 
 function sol_tile_at_left_foot_floor() {
-    return Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor(solx/tile))])
+    return Number(level[Math.floor((soly/tile))-1][(Math.floor(solx/tile))])
 }
 
 function sol_tile_at_right_foot_floor() {
-    return Number(level[Math.floor((soly/tile))-1].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+    return Number(level[Math.floor((soly/tile))-1][(Math.floor((solx+sol_size-sol_step)/tile))])
 }
 
 function sol_tile_at_left_head_ceiling() {
-    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor(solx/tile))])
+    return Number(level[Math.floor((soly+sol_size)/tile)][(Math.floor(solx/tile))])
 }
 
 function sol_tile_at_right_head_ceiling() {
-    return Number(level[Math.floor((soly+sol_size)/tile)].split('')[(Math.floor((solx+sol_size-sol_step)/tile))])
+    return Number(level[Math.floor((soly+sol_size)/tile)][(Math.floor((solx+sol_size-sol_step)/tile))])
 }
 
 function sol_block() {
@@ -123,7 +125,8 @@ function sol_tile_dist_left_head() {
 
 function tick() {
 
-    if (keys.down) sol_crouch=1; else sol_crouch=0
+    if (keys.down) sol_crouch=1
+    else sol_crouch=0
 
     left_headwall = sol_tile_at_left_head()
     left_footwall = sol_tile_at_left_foot()
@@ -133,12 +136,10 @@ function tick() {
     if (keys.left) {
         sol_dir = -1
         if  (sol_crouch==0 && left_footwall==0 && left_headwall==0) solx-=sol_step
-    }
-    if (keys.right) {
+    } else if (keys.right) {
         sol_dir = 1
         if (sol_crouch==0 && right_footwall==0 && right_headwall==0) solx+=sol_step
     }
-
 
     floating=false
     leftfootfloor = sol_tile_at_left_foot_floor()
@@ -162,7 +163,24 @@ function tick() {
         
         
         if (leftheadceiling==0 && rightheadceiling==0) soly+=sol_jump_inc
-        else sol_jump=0        
+        else {
+            sol_jump=0
+            if (sol_dir==-1 && leftheadceiling>0 && leftheadceiling!=3 && sol_tile_dist_left_head()<sol_size) {
+                ll = Math.floor((soly+sol_size)/tile)
+                cc = (Math.floor(solx/tile))
+                level[ll][cc] = leftheadceiling-1
+                var b = document.getElementById(`block_cc${cc}ll${ll}`)
+                if (level[ll][cc]==0) document.body.removeChild(b)
+                else if (level[ll][cc]==1) b.style.backgroundColor = "grey"
+            } else if (sol_dir==1 && rightheadceiling>0 && rightheadceiling!=3 && sol_tile_dist_right_head()<(tile-sol_size)) {
+                ll = Math.floor((soly+sol_size)/tile)
+                cc = Math.floor((solx+sol_size-sol_step)/tile)
+                level[ll][cc] = rightheadceiling-1
+                var b = document.getElementById(`block_cc${cc}ll${ll}`)
+                if (level[ll][cc]==0) document.body.removeChild(b)
+                else if (level[ll][cc]==1) b.style.backgroundColor = "grey"
+            }
+        }
         
         sol_crouch = 0 ///decativate crouch
         
@@ -196,23 +214,16 @@ function tick() {
                     //block_x--
                 } 
             }
-            level_block = Number(level[block_y].split('')[block_x])
+            level_block = Number(level[block_y][block_x])
             console.log(level_block)
             if (level_block==0) {
-                l = level[block_y]
-                l2 = l.split('')
-                l2[block_x] = 2
-                level[block_y]=l2.join('')
-                console.log(block_x, block_y)
+                level[block_y][block_x] = 2
                 var b = document.createElement('div')
                 b.id = `block_cc${block_x}ll${block_y}`
                 b.style=`position:absolute; background-color:black; left:${block_x*tile}px; top:${(level.length-block_y-1)*tile}px; width:${tile}px; height:${tile}px;`
                 document.body.appendChild(b)
             } else if (level_block<3) {
-                l = level[block_y]
-                l2 = l.split('')
-                l2[block_x] = 0
-                level[block_y]=l2.join('')
+                level[block_y][block_x] = 0                
                 console.log(block_x, block_y)
                 var b = document.getElementById(`block_cc${block_x}ll${block_y}`)
                 //b.style=`position:absolute; background-color:black; left:${block_x*tile}px; top:${(level.length-block_y-1)*tile}px; width:${tile}px; height:${tile}px;`
