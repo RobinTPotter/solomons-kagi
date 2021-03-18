@@ -77,12 +77,10 @@ class Solomon:
         print("jump complete")
         self.current_state["jumping"]=False
 
-    def __init__(self,sx_sy):
+    def __init__(self,sx,sy):
 
-        sx = sx_sy[0]
-        sy = sx_sy[1]
         print ('init solomon {0},{1}'.format(sx,sy))
-        
+
         self.current_state["standing"]=True
         self.current_state["crouching"]=False
         self.current_state["walking"]=False

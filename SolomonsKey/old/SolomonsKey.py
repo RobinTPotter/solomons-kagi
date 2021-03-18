@@ -21,12 +21,22 @@ import random
 from Models import lists, MakeLists, colours
 from Action import Action, ActionGroup
 from Joystick import Joystick
+from Sprite import Sprite
 import Letters
-import Level
+
 from charSolomon import Solomon
 from charBurst import Burst
+from controller import generateLevel, Level
+
+X=46.0
 
 name = "solomon\'s key"
+
+
+from config import *
+
+def dump(thing):
+    print (thing.__dict__)
 
 class XYZ:
     def __init__(self, x=None, y=None, z=None):
@@ -81,7 +91,7 @@ class SolomonsKey:
             pass
 
         # run calculations for level inc collision etc
-        #if not self.level==None: self.level.evaluate(self.joystick,self.keys)
+        if not self.level==None: self.level.evaluate(self.joystick,self.keys)
 
         glutPostRedisplay()
 
@@ -92,10 +102,10 @@ class SolomonsKey:
         self.topFPS = int(1000/drawTime)
 
         # set camera target focus points
-        self.cam_focus_target = XYZ(self.solomon.x+0.2*self.solomon.facing,self.solomon.y-0.5,3.0)
+        self.cam_focus_target = XYZ(self.level.solomon.x+0.2*self.level.solomon.facing,self.level.solomon.y-0.5,3.0)
 
         # set camera target position
-        self.cam_pos_target = XYZ(self.solomon.x+1*self.solomon.facing, self.solomon.y-0.2,float(self.level.target_z))
+        self.cam_pos_target = XYZ(self.level.solomon.x+1*self.level.solomon.facing, self.level.solomon.y-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
@@ -182,9 +192,7 @@ class SolomonsKey:
         glPushMatrix()
 
         print("generating level")
-        self.level=Level.generateLevel(0)
-        self.solomon=Solomon(self.level.solomon_start)
-
+        self.level=generateLevel(0)
 
         print("keys set up")
         self.initkey("zxdcfvqaopm")
@@ -220,13 +228,12 @@ class SolomonsKey:
                   0, 1, 0  )
 
         wdth=0.3
-        glTranslate(0.0-(len(self.solomon.current_state.keys())-1)*wdth/2.0,-1.3,0)
+        glTranslate(0.0-(len(self.level.solomon.current_state.keys())-1)*wdth/2.0,-1.3,0)
 
-        #if debug==True:
-        if False:
-            for k in self.solomon.current_state.keys():
+        if debug==True:
+            for k in self.level.solomon.current_state.keys():
                 col="red"
-                if self.solomon.current_state[k]: col="green"
+                if self.level.solomon.current_state[k]: col="green"
                 glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[col])
                 glutSolidCube(wdth-0.02)
                 glTranslate(wdth,0,0)
@@ -250,8 +257,7 @@ class SolomonsKey:
         joystick_actions=[x for x in dir(self.joystick) if x[0:2]=="is"]
         glTranslate(0.0-(len(joystick_actions)-1)*wdth/2.0,-1.0,0)
 
-        #if debug==True:
-        if False:
+        if debug==True:
             for k in joystick_actions:
                 #print(k)
                 col="red"
@@ -277,11 +283,10 @@ class SolomonsKey:
         glScale(0.01,0.01,-0.01)
         glTranslate(-180,-70,0)
 
-        #if debug==True:
-        if False:
-            self.letters.drawString('X:'+str(self.solomon.x)+' Y:'+str(self.solomon.y))
+        if debug==True:
+            self.letters.drawString('X:'+str(self.level.solomon.x)+' Y:'+str(self.level.solomon.y))
             glTranslate(0,0-15,0)
-            gx,gy=int(self.solomon.x),int(self.solomon.y)            
+            gx,gy=int(self.level.solomon.x),int(self.level.solomon.y)            
             self.letters.drawString('G {0} on: {1} below: {2}'.format(str((gx,gy)),self.level.grid[gy][gx],self.level.grid[gy-1][gx]))
             glTranslate(0,0-15,0)
             self.letters.drawString('')
