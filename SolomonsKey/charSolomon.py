@@ -9,12 +9,16 @@ class Solomon:
 
     drawSolProperly=True
     x,y=None,None
+    
+    sol_crouch=0
+    sol_walking=0
+    sol_wand=0
+    
     startx,starty=None,None
     #st_a=None
     AG_walk=None
     AG_jump=None
     A_wandswish=None
-    current_state={}
     size_x=0.6
     size_y=0.8
     det_size_x=0.4
@@ -35,7 +39,7 @@ class Solomon:
 
     bound=0.3 #this is his bounding sphere
     step=0.100
-    facing=1 #or -1
+    sol_dir=1 #or -1
 
     def wobble(self,tvmm):
         t,v,mi,ma=tvmm
@@ -73,27 +77,13 @@ class Solomon:
         return v
 
 
-    def end_jump(self):
-        print("jump complete")
-        self.current_state["jumping"]=False
-
     def __init__(self,sx_sy):
 
         sx = sx_sy[0]
         sy = sx_sy[1]
         print ('init solomon {0},{1}'.format(sx,sy))
         
-        self.current_state["standing"]=True
-        self.current_state["crouching"]=False
-        self.current_state["walking"]=False
-        self.current_state["jumping"]=False
-        self.current_state["wandswish"]=False
-        self.current_state["falling"]=False
-        self.current_state["cwleft"]=False
-        self.current_state["cwright"]=False
-        self.current_state["canfall"]=False
-        self.current_state["headhurt"]=False
-
+     
         self.x=sx
         self.y=sy
 
@@ -107,55 +97,14 @@ class Solomon:
 
         self.AG_jump=ActionGroup()
         self.AG_jump.append("jump_displacement",Action(func=self.jump_displacement,max=10,min=0))
-        self.AG_jump.action("jump_displacement").callback=self.end_jump
-
-
+        ##self.AG_jump.action("jump_displacement").callback=self.end_jump
 
         self.AG_walk.speed_scale(2)
 
         self.A_wandswish=Action(func=self.swish,min=-8,max=-1,cycle=False,reverseloop=False,init_tick=-6)
 
+    def draw(self):
 
-    def set_x(self,x):
-        self.x=round(x,2)
-        print('set x {}'.format(self.x))##+" "+str(self.state_test_on()))
-
-    def set_y(self,y):
-        self.y=round(y,2)
-        print('set y {}'.format(self.y))##+" "+str(self.state_test_on())+" "+str(self.jumping_rest))
-
-    def state_test_on(self):
-        return [k for k in self.current_state if self.current_state[k]==True]
-
-    def state_test(self,list):
-        return len([l for l in list if self.current_state[l]==True])
-
-
-    def draw0(self,stickers=None):
-        glTranslate(self.x,self.y,0)
-        glutSolidCube(0.5)
-
-
-    def draw(self,stickers=None):
-
-
-        if stickers!=None:
-            for st in stickers:
-                glPushMatrix()
-                ##glLoadIdentity()
-                #print((st))   
-                glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[st[3]])
-                glTranslate(st[0],st[1],st[2])
-                glutSolidCube(0.05)
-                glPopMatrix()
-
-
-
-        #if self.drawSolProperly:
-        #    #correction
-        #    glTranslate(0,-0.15,0)
-
-        #main displacement
         glTranslate(self.x,self.y,0)
 
         if self.drawSolProperly==False:
@@ -182,8 +131,8 @@ class Solomon:
             #scale down character
             glScale(0.3,0.3,0.3)
 
-        #rotate to direction facing
-        if self.facing==-1: glRotatef(180,0,1,0)
+        #rotate to direction sol_dir
+        if self.sol_dir==-1: glRotatef(180,0,1,0)
 
         #correction for drawing character
         glRotatef(-90.0,1.0,0,0)
@@ -195,8 +144,8 @@ class Solomon:
         #############################entering crouch section###############################
         glPushMatrix()
 
-        if "crouching" in self.state_test_on(): glTranslate(0,0,-0.4)
-        if "walking" in self.state_test_on(): glRotatef(-8.0*float(self.AG_walk.value("wobble")),0.0,0.0,1.0)
+        if self.sol_crouch==1: glTranslate(0,0,-0.4)
+        if self.sol_walking==1: glRotatef(-8.0*float(self.AG_walk.value("wobble")),0.0,0.0,1.0)
 
         draw_body=True
 
@@ -204,7 +153,7 @@ class Solomon:
 
             #hat
             glPushMatrix()
-            if "walking" in self.state_test_on(): glRotatef(-float(self.AG_walk.value("wobble")),1.0,0,0)
+            if self.sol_walking==1: glRotatef(-float(self.AG_walk.value("wobble")),1.0,0,0)
             glTranslate(0,0,0.5)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["hat"])
             if self.drawSolProperly: glutSolidCone(1,2,12,6)
@@ -219,8 +168,8 @@ class Solomon:
 
             #left arm
             glPushMatrix()
-            if self.state_test(["walking"])>0: glTranslate(0-float(self.AG_walk.value("footR"))/10,0.9,0)
-            elif self.state_test(["standing","crouching","wandswish"])>0: glTranslate(0,0.9,0)
+            if self.sol_walking==1: glTranslate(0-float(self.AG_walk.value("footR"))/10,0.9,0)
+            else: glTranslate(0,0.9,0)
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["arm"])
             if self.drawSolProperly: glutSolidSphere(0.5,24,12)
             glPopMatrix()
@@ -228,7 +177,7 @@ class Solomon:
         #right arm
         glPushMatrix()
         #glTranslate(0,-0.9,0)
-        if self.state_test(["wandswish"])>0:
+        if self.sol_wand>0:
             res=self.A_wandswish.do()
             if res==None: poo=0.0
             else: poo=float(res/0.05)
@@ -236,8 +185,8 @@ class Solomon:
             glTranslate(0,-0.9,0)
             glRotatef(poo,1,1,0)
 
-        elif self.state_test(["walking"])>0: glTranslate(float(self.AG_walk.value("footL"))/10,-0.9,0)
-        elif self.state_test(["standing","crouching"])>0: glTranslate(0,-0.9,0)
+        elif self.sol_walking==1: glTranslate(float(self.AG_walk.value("footL"))/10,-0.9,0)
+        else: glTranslate(0,-0.9,0)
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["arm"])
         if self.drawSolProperly: glutSolidSphere(0.5,24,12)
         #move pop to end to keep arm local system
@@ -293,8 +242,8 @@ class Solomon:
         glPushMatrix()
         glTranslate(-0.5,0,0)
         #apply rotation if walking
-        if self.state_test(["walking"])>0: glRotatef(-15*float(self.AG_walk.value("footL")),0,1,0)
-        elif self.state_test(["standing","crouching","wandswish"])>0: glRotatef(0,0,1,0)
+        if self.sol_walking==1: glRotatef(-15*float(self.AG_walk.value("footL")),0,1,0)
+        else: glRotatef(0,0,1,0)
         glTranslate(0.5,0,0)
         glScale(1.7,1,.5)
         glTranslate(0,0.5,-2)
@@ -306,8 +255,8 @@ class Solomon:
         glPushMatrix()
         glTranslate(-0.5,0,0)
         #apply rotation if walking
-        if self.state_test(["walking"])>0: glRotatef(-15*float(self.AG_walk.value("footR")),0,1,0)
-        elif self.state_test(["standing","crouching","wandswish"])>0: glRotatef(0,0,1,0)
+        if self.sol_walking==1: glRotatef(-15*float(self.AG_walk.value("footR")),0,1,0)
+        else: glRotatef(0,0,1,0)
         glTranslate(0.5,0,0)
         glScale(1.7,1,.5)
         glTranslate(0,-0.5,-2)
