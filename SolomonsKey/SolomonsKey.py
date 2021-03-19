@@ -23,8 +23,9 @@ from Action import Action, ActionGroup
 from Joystick import Joystick
 import Letters
 import Level
-from charSolomon import Solomon
-from charBurst import Burst
+from Solomon import Solomon
+from Burst import Burst
+from Logic import gogogo
 
 import threading
 
@@ -73,12 +74,12 @@ class SolomonsKey(threading.Thread):
 
         #key movement for omnicontrol
         try:
-            if self.keys["x"]: self.cam_focus.x+=1
-            if self.keys["z"]: self.cam_focus.x-=1
-            if self.keys["d"]: self.cam_focus.y+=1
-            if self.keys["c"]: self.cam_focus.y-=1
-            if self.keys["f"]: self.cam_focus.z+=1
-            if self.keys["v"]: self.cam_focus.z-=1
+            if self.keys[b"x"]: self.cam_focus.x+=1
+            if self.keys[b"z"]: self.cam_focus.x-=1
+            if self.keys[b"d"]: self.cam_focus.y+=1
+            if self.keys[b"c"]: self.cam_focus.y-=1
+            if self.keys[b"f"]: self.cam_focus.z+=1
+            if self.keys[b"v"]: self.cam_focus.z-=1
         except:
             pass
 
@@ -94,10 +95,10 @@ class SolomonsKey(threading.Thread):
         self.topFPS = int(1000/drawTime)
 
         # set camera target focus points
-        self.cam_focus_target = XYZ(self.solomon.x+0.2*self.solomon.sol_dir,self.solomon.y-0.5,3.0)
+        self.cam_focus_target = XYZ(self.solomon.solx+0.2*self.solomon.sol_dir,self.solomon.soly-0.5,3.0)
 
         # set camera target position
-        self.cam_pos_target = XYZ(self.solomon.x+1*self.solomon.sol_dir, self.solomon.y-0.2,float(self.level.target_z))
+        self.cam_pos_target = XYZ(self.solomon.solx+1*self.solomon.sol_dir, self.solomon.soly-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
@@ -211,6 +212,7 @@ class SolomonsKey(threading.Thread):
     def display(self):
 
         glLoadIdentity()
+        
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
 
         gluLookAt(self.cam_pos.x,self.cam_pos.y,self.cam_pos.z,
@@ -218,73 +220,66 @@ class SolomonsKey(threading.Thread):
                   0,1,0)
 
         self.level.draw()   
+        
+        
+        gogogo(self.level, self.solomon)
+        
+        
         self.solomon.draw()        
 
-        glLoadIdentity()
-
-        gluLookAt(0, -0.5, 2.5,
-                  0, 0, 0  ,
-                  0, 1, 0  )
-
-        wdth=0.3
-        #glTranslate(0.0-(len(self.solomon.current_state.keys())-1)*wdth/2.0,-1.3,0)
 
 
-
-        glLoadIdentity()
-
-        gluLookAt(0, -0.5, 2.5,
-                  0, 0, 0  ,
-                  0, 1, 0  )
-
-        wdth=0.2
-
-        joystick_actions=[x for x in dir(self.joystick) if x[0:2]=="is"]
-        glTranslate(0.0-(len(joystick_actions)-1)*wdth/2.0,-1.0,0)
 
         #if debug==True:
         if True:
+            glLoadIdentity()
+            gluLookAt(0, -0.5, 2.5,
+                      0, 0, 0  ,
+                      0, 1, 0  )
+            wdth=0.2
+            joystick_actions=[x for x in dir(self.joystick) if x[0:2]=="is"]
+            glTranslate(0.0-(len(joystick_actions)-1)*2*wdth/2.0,-1.0,0)
             for k in joystick_actions:
                 #print(k)
                 col="red"
                 if getattr(self.joystick,k)(self.keys): col="green"
                 glMaterialfv(GL_FRONT,GL_DIFFUSE,colours[col])
-                glutSolidCube(wdth-0.02)
-                glTranslate(wdth,0,0)
+                glutSolidCube(2*wdth-0.02)
+                glTranslate(2*wdth,0,0)
                 glPushMatrix()
                 #glLoadIdentity()
-                glScale(0.005,0.01,-0.01)
-                glTranslate(-45,0,-20)
+                glScale(0.007,0.01,-0.01)
+                glTranslate(-75,0,-20)
                 #glTranslate(-180,-70,0)
-                glTranslate(-wdth,0,0)
-                self.letters.drawString(k[2:4])
+                glTranslate(-2*wdth,0,0)
+                self.letters.drawString(k[2:5])
                 glPopMatrix()
 
-        glLoadIdentity()
-
-        gluLookAt(0, 0, 2.5,
-                  0, 0, 0  ,
-                  0, 1, 0  )
-
-        glScale(0.01,0.01,-0.01)
-        glTranslate(-180,-70,0)
+        ##glLoadIdentity()
+        ##
+        ##gluLookAt(0, 0, 2.5,
+        ##          0, 0, 0  ,
+        ##          0, 1, 0  )
+        ##
+        ##glScale(0.01,0.01,-0.01)
+        ##glTranslate(-180,-70,0)
 
         #if debug==True:
-        if True:
-            self.letters.drawString('X:'+str(self.solomon.x)+' Y:'+str(self.solomon.y))
-            glTranslate(0,0-15,0)
-            gx,gy=int(self.solomon.x),int(self.solomon.y)            
-            self.letters.drawString('G {0} on: {1} below: {2}'.format(str((gx,gy)),self.level.grid[gy][gx],self.level.grid[gy-1][gx]))
-            glTranslate(0,0-15,0)
-            self.letters.drawString('')
+        ##if True:
+        ##    self.letters.drawString('X:'+str(self.solomon.solx)+' Y:'+str(self.solomon.soly))
+        ##    glTranslate(0,0-15,0)
+        ##    gx,gy=int(self.solomon.solx),int(self.solomon.soly)            
+        ##    self.letters.drawString('G {0} on: {1} below: {2}'.format(str((gx,gy)),self.level.grid[gy][gx],self.level.grid[gy-1][gx]))
+        ##    glTranslate(0,0-15,0)
+        ##    self.letters.drawString('')
 
         glutSwapBuffers()
 
     def keydownevent(self,c,x,y):
-        print ("*******************************************************************************")
+        #print ("*******************************************************************************")
         try:
             self.keys[c]=True
-            print(self.keys)
+            #print(self.keys)
         except Exception as e:
             print(e)    
             pass
@@ -294,11 +289,18 @@ class SolomonsKey(threading.Thread):
     def keyupevent(self,c,x,y):
         try:
             if c in self.keys: self.keys[c]=False
-            print(self.keys)
+            #print(self.keys)
         except Exception as e:
             print(e)    
             pass
 
         glutPostRedisplay()
 
-if __name__ == '__main__': SolomonsKey()
+
+
+
+
+
+if __name__ == '__main__':
+    s = SolomonsKey()
+    s.start()
