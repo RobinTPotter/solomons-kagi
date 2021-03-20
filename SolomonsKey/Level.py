@@ -73,8 +73,9 @@ class Level:
     sprites=[]
     bursts=[]
     door=None
-    target_z=6
-    proper_z=6
+    target_z=50
+    proper_z=12
+    tile=10
 
     def __init__(self,griddata):
 
@@ -128,13 +129,13 @@ class Level:
                 #if True:
                 if rr>=0 and rr<=13 and cc>=0 and cc<=16:
                     glPushMatrix()
-                    glTranslate(cc,rr+0.5,0)
+                    glTranslate(self.tile*cc,self.tile*rr,0)
                     
                     if c in ["2","3"]:
                         if c!="3": color = [0.3,0.3,1.0,1.0]
                         else: color = [1.0,1.0,0.0,1.0]
                         glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
-                        if True: glutSolidCube(1)
+                        if True: glutSolidCube(self.tile*1)
 
                     elif c in ["d","6"]:
                         glEnable(GL_BLEND)
@@ -142,7 +143,7 @@ class Level:
                         if c=="d": color = [0.8,0.5,0.0, 0.1+0.2*float(self.AG_twinklers.value("twinkle1")) ]
                         elif c=="6": color = [10,0.5,0.0, 0.1+0.2*float(self.AG_twinklers.value("twinkle1")) ]
                         glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
-                        glutSolidCube( float(self.AG_twinklers.value("twinkle2"))*0.3+0.7)
+                        glutSolidCube( float(self.tile*(self.AG_twinklers.value("twinkle2"))*0.3+0.7))
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE)
                         glDisable(GL_BLEND)
 

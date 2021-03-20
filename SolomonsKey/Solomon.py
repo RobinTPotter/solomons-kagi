@@ -28,6 +28,7 @@ class Solomon:
     AG_walk=None
     AG_jump=None
     A_wandswish=None
+    tile =10
 
     def wobble(self,tvmm):
         t,v,mi,ma=tvmm
@@ -85,13 +86,14 @@ class Solomon:
 
     def draw(self):
 
-        glTranslate(self.solx,self.soly,0)
+        glTranslate(self.tile*self.solx,self.tile*self.soly-1,0)
+        glScale(self.tile,self.tile,self.tile)
 
         if self.drawSolProperly==False:
             #size box for edge/falling etc
             glPushMatrix()
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
-            glTranslate(0,self.size_y/2,0)
+            #glTranslate(0,self.size_y/2,0)
             glScale(self.size_x, self.size_y,1.0)
             glutWireCube(1)
             glPopMatrix()
@@ -105,7 +107,7 @@ class Solomon:
             glPopMatrix()
         else:
             #offset model
-            glTranslate(0,0.35,0)
+            #glTranslate(0,0.35,0)
             #scale down character
             glScale(0.3,0.3,0.3)
 

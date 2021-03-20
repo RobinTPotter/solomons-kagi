@@ -95,10 +95,10 @@ class SolomonsKey(threading.Thread):
         self.topFPS = int(1000/drawTime)
 
         # set camera target focus points
-        self.cam_focus_target = XYZ(self.solomon.solx+0.2*self.solomon.sol_dir,self.solomon.soly-0.5,3.0)
+        self.cam_focus_target = XYZ(self.level.tile*self.solomon.solx+0.2*self.solomon.sol_dir,self.level.tile*self.solomon.soly-0.5,3.5)
 
         # set camera target position
-        self.cam_pos_target = XYZ(self.solomon.solx+1*self.solomon.sol_dir, self.solomon.soly-0.2,float(self.level.target_z))
+        self.cam_pos_target = XYZ(self.level.tile*self.solomon.solx+1*self.solomon.sol_dir, self.level.tile*self.solomon.soly-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
@@ -218,6 +218,8 @@ class SolomonsKey(threading.Thread):
         gluLookAt(self.cam_pos.x,self.cam_pos.y,self.cam_pos.z,
                   self.cam_focus.x, self.cam_focus.y, self.cam_focus.z,
                   0,1,0)
+
+        glScale(0.9,0.9,0.9)
 
         self.level.draw()   
         
