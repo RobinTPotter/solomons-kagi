@@ -19,7 +19,7 @@ class Solomon:
     sol_crouch = 0
     sol_step = 1
     sol_jump_inc = 2
-    sol_jump_limit = 10 ##floor((tile+4) /sol_jump_inc)
+    sol_jump_limit = 6 ##floor((tile+4) /sol_jump_inc)
     sol_jump_rest = 0 
     sol_jump_rest_limit = 3
     sol_fall_inc = 2
@@ -65,8 +65,8 @@ class Solomon:
         print ('init solomon {0},{1}'.format(sx,sy))
         
      
-        self.solx=sx
-        self.soly=sy
+        self.solx=sx*self.tile
+        self.soly=sy*self.tile
 
         ##self.startx=sx
         ##self.starty=sy
@@ -84,9 +84,58 @@ class Solomon:
 
         self.A_wandswish=Action(func=self.swish,min=-8,max=-1,cycle=False,reverseloop=False,init_tick=-6)
 
+
+    def sol_tile_at_left_head(self,level):
+        return int(level[floor((self.soly+self.sol_size)/self.tile)][(floor((self.solx-self.sol_step)/self.tile))])
+
+
+    def sol_tile_at_left_foot(self,level):
+        return int(level[floor((self.soly)/self.tile)][(floor((self.solx-self.sol_step)/self.tile))])
+
+
+    def sol_tile_at_right_head(self,level):
+        return int(level[floor((self.soly+self.sol_size)/self.tile)][(floor((self.solx+self.sol_size)/self.tile))])
+
+
+    def sol_tile_at_right_foot(self,level):
+        return int(level[floor((self.soly)/self.tile)][(floor((self.solx+self.sol_size)/self.tile))])
+
+
+    def sol_tile_at_left_foot_floor(self,level):
+        return int(level[floor((self.soly/self.tile))-1][(floor(self.solx/self.tile))])
+
+
+    def sol_tile_at_right_foot_floor(self,level):
+        return int(level[floor((self.soly/self.tile))-1][(floor((self.solx+self.sol_size-self.sol_step)/self.tile))])
+
+
+    def sol_tile_at_left_head_ceiling(self,level):
+        return int(level[floor((self.soly+self.sol_size)/self.tile)][(floor(self.solx/self.tile))])
+
+
+    def sol_tile_at_right_head_ceiling(self,level):
+        return int(level[floor((self.soly+self.sol_size)/self.tile)][(floor((self.solx+self.sol_size-self.sol_step)/self.tile))])
+
+
+    def sol_block(self,level):
+        return [floor((self.soly+self.sol_size/2)/self.tile)
+        ,(floor((self.solx)/self.tile))]
+
+
+    def sol_tile_dist_right_head(self,level):
+        d = self.sol_size - ((self.solx+self.sol_size) % self.tile)
+        if d==self.sol_size: d=0
+        return d
+
+
+    def sol_tile_dist_left_head(self,level):
+        return (self.solx) % self.tile
+
+
+
     def draw(self):
 
-        glTranslate(self.tile*self.solx,self.tile*self.soly-1,0)
+        glTranslate(self.solx-2,self.soly-1.5,2)
         glScale(self.tile,self.tile,self.tile)
 
         if self.drawSolProperly==False:
@@ -243,6 +292,7 @@ class Solomon:
         glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["shoe"])
         if self.drawSolProperly: glutSolidSphere(0.5,24,12)
         glPopMatrix()
+        
 
 
 

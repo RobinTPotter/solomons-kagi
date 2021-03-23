@@ -53,7 +53,7 @@ class Action:
                     self.callback.__call__()  #for pylint                   
                     #print(dir(self))
                     print("callback called")
-                    self.kick()
+                self.kick()
                     
                      
         if not self.value==None: return self.value

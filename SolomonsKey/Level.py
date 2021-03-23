@@ -1,17 +1,7 @@
-
-from OpenGL.GLUT import glutSwapBuffers, glutSolidCube, glutKeyboardFunc, glutKeyboardUpFunc, glutDisplayFunc, \
-glutIdleFunc, glutInit, glutInitDisplayMode, glutCreateWindow, glutMainLoop, \
-glutInitWindowSize, glutIgnoreKeyRepeat, glutSpecialFunc, glutReshapeFunc, glutSpecialUpFunc, glutTimerFunc, \
-glutPostRedisplay, GLUT_DOUBLE, GLUT_RGBA, GLUT_DEPTH, glutWireCube
-
-from OpenGL.GLU import gluPerspective, gluLookAt
-
-from OpenGL.GL import GL_PROJECTION,  GL_MODELVIEW, GL_DEPTH_TEST, GL_SMOOTH, \
-GL_CULL_FACE, GL_LIGHTING, GL_POSITION, GL_LIGHT0, glLoadIdentity, \
-glMatrixMode, glPushMatrix, glBlendFunc, glEnable, glClearColor, glShadeModel, glLightfv, \
-GL_LINEAR_ATTENUATION, GL_CONSTANT_ATTENUATION, GL_DIFFUSE, \
-glMaterialfv, glTranslate, glPopMatrix, glScale, GL_LIGHT1, GL_FRONT, glLightf, \
-glViewport, GL_SRC_ALPHA, GL_ONE, GL_DEPTH_BUFFER_BIT, glClear, GL_COLOR_BUFFER_BIT
+from OpenGL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL import *
 
 from Sprite import Sprite
 from Models import lists, colours
@@ -92,7 +82,7 @@ class Level:
             for c in r:
                 if c=="6":
                     self.solomon_start=[cc,rr]
-                    self.grid[rr][cc]="."
+                    self.grid[rr][cc]="0"
                     #self.solomon.A_wandswish.callback=self.block_swap
                 elif c=="7":
                     self.door=[cc,rr]
@@ -130,7 +120,7 @@ class Level:
                 if rr>=0 and rr<=13 and cc>=0 and cc<=16:
                     glPushMatrix()
                     glTranslate(self.tile*cc,self.tile*rr,0)
-                    
+                    c = str(c)
                     if c in ["2","3"]:
                         if c!="3": color = [0.3,0.3,1.0,1.0]
                         else: color = [1.0,1.0,0.0,1.0]
@@ -150,7 +140,13 @@ class Level:
                     elif c in ["1"]: ##i.e changed to half a block because recieved bash
                         color = [0.3,0.3,1.0,1.0]
                         glMaterialfv(GL_FRONT,GL_DIFFUSE,color)
+                        
+                        glPushMatrix()
+                        glScale(self.tile,self.tile,self.tile)
+       
                         glCallList(lists["broken brick"])
+                        glPopMatrix()
+                        #if True: glutSolidCube(self.tile*1)
 
                     glPopMatrix()
 

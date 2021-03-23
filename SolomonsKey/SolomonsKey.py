@@ -9,9 +9,9 @@ from OpenGL.GLU import gluPerspective, gluLookAt
 
 from OpenGL.GL import GL_PROJECTION,  GL_MODELVIEW, GL_DEPTH_TEST, GL_SMOOTH, \
 GL_CULL_FACE, GL_LIGHTING, GL_POSITION, GL_LIGHT0, glLoadIdentity, \
-glMatrixMode, glPushMatrix, glBlendFunc, glEnable, glClearColor, glShadeModel, glLightfv, \
-GL_LINEAR_ATTENUATION, GL_CONSTANT_ATTENUATION, GL_DIFFUSE, \
-glMaterialfv, glTranslate, glPopMatrix, glScale, GL_LIGHT1, GL_FRONT, glLightf, \
+glMatrixMode, glPushMatrix, glBlendFunc, glEnable, glDisable, glClearColor, glShadeModel, glLightfv, \
+GL_LINEAR_ATTENUATION, GL_CONSTANT_ATTENUATION, GL_DIFFUSE, GL_SPECULAR, GL_AMBIENT, \
+glMaterialfv, glTranslate, glPopMatrix, glScale, GL_LIGHT1, GL_LIGHT2, GL_FRONT, glLightf, \
 glViewport, GL_SRC_ALPHA, GL_ONE, GL_DEPTH_BUFFER_BIT, glClear, GL_COLOR_BUFFER_BIT
 
 import sys
@@ -57,12 +57,14 @@ class XYZ:
 
 class SolomonsKey(threading.Thread):
 
+    thing = 0
     level=None
     keys={}
     cam_pos = XYZ(0,0,0)
     cam_pos_target= XYZ(0,0,0)
     cam_focus = XYZ(0,0,0)
     cam_focus_target = XYZ(0,0,0)
+    key_light = XYZ(0,0,0)
     lastFrameTime=0
     topFPS=0
     camera_sweep = 20
@@ -95,10 +97,10 @@ class SolomonsKey(threading.Thread):
         self.topFPS = int(1000/drawTime)
 
         # set camera target focus points
-        self.cam_focus_target = XYZ(self.level.tile*self.solomon.solx+0.2*self.solomon.sol_dir,self.level.tile*self.solomon.soly-0.5,3.5)
+        self.cam_focus_target = XYZ(self.solomon.solx+0.2*self.solomon.sol_dir,self.solomon.soly-0.5,3.5)
 
         # set camera target position
-        self.cam_pos_target = XYZ(self.level.tile*self.solomon.solx+1*self.solomon.sol_dir, self.level.tile*self.solomon.soly-0.2,float(self.level.target_z))
+        self.cam_pos_target = XYZ(self.solomon.solx+1*self.solomon.sol_dir, self.solomon.soly-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
@@ -143,23 +145,34 @@ class SolomonsKey(threading.Thread):
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_LIGHTING)
 
-        print ("set light 1")
-        lightZeroPosition = [10.,4.,10.,1.]
-        lightZeroColor = [0.9,1.0,0.9,1.0] #green tinged
-        glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
-        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.2)
-        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
-        glEnable(GL_LIGHT0)
-
-        print ("set light 2")
-        lightZeroPosition2 = [-10.,-4.,10.,1.]
-        lightZeroColor2 = [1.0,0.9,0.9,1.0] #green tinged
-        glLightfv(GL_LIGHT1, GL_POSITION, lightZeroPosition2)
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, lightZeroColor2)
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.2)
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
-        glEnable(GL_LIGHT1)
+        #print ("set light 1")
+        #lightZeroPosition = [-10.,-4.,10.,1.5]
+        #glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
+        #lightZeroColor = [1.0,1.0,1.0,1.0] #green tinged
+        #glEnable(GL_LIGHT0)
+        #glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
+        #glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.2)
+        #glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+        #
+        #print ("set light 2")
+        #lightZeroPosition2 = [-10.,-4.,10.,0.5]
+        #glLightfv(GL_LIGHT1, GL_POSITION, lightZeroPosition2)
+        #lightZeroColor2 = [1.0,0.9,0.9,1.0] #green tinged
+        #glEnable(GL_LIGHT1)
+        #glLightfv(GL_LIGHT1, GL_DIFFUSE, lightZeroColor2)
+        #glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.2)
+        #glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
+        #
+        print ("set light 3")
+        #self.key_light.z=5
+        self.key_light = XYZ(10,0,15)
+        glLightfv(GL_LIGHT2, GL_POSITION, [self.key_light.x,self.key_light.y,self.key_light.z,0.01])
+        glEnable(GL_LIGHT2)
+        glLightfv(GL_LIGHT2, GL_DIFFUSE, [0.8,0.8,0.8,1.0])
+        glLightfv(GL_LIGHT2, GL_AMBIENT, [0.5,0.5,0.5,1.0])
+        glLightfv(GL_LIGHT2, GL_SPECULAR, [1.0,1.0,1.0,1.0])
+        glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.01)
+        glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.01)
 
         #initialization of letters
         print("initialzing letters")
@@ -221,16 +234,41 @@ class SolomonsKey(threading.Thread):
 
         glScale(0.9,0.9,0.9)
 
+
         self.level.draw()   
         
         
-        gogogo(self.level, self.solomon)
+        gogogo(self.level, self.solomon, self.keys)
+        #glLightfv(GL_LIGHT2, GL_POSITION, [self.solomon.solx,self.solomon.soly,10,0.01])
+        glLightfv(GL_LIGHT2, GL_POSITION, [0,0,0.7,0.01])
+      
         
         
-        self.solomon.draw()        
+        self.solomon.draw()      
+        if self.solomon.sol_walking==1: self.solomon.AG_walk.do()  
 
-
-
+        self.thing +=1
+        
+        
+        ##if self.thing%100>50:
+        ##    #glEnable(GL_LIGHT1)
+        ##    pass
+        ##else:
+        ##    glDisable(GL_LIGHT1)
+        ##
+        ##
+        ##if self.thing%20>10:
+        ##    glEnable(GL_LIGHT2)
+        ##else:
+        ##    glDisable(GL_LIGHT2)
+        ##
+        ##
+        ##if self.thing%50>25:
+        ##    #glEnable(GL_LIGHT0)
+        ##    pass
+        ##else:
+        ##    glDisable(GL_LIGHT0)
+        
 
         #if debug==True:
         if True:
