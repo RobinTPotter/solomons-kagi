@@ -135,8 +135,8 @@ class Solomon:
 
     def draw(self):
 
-        glTranslate(self.solx-2,self.soly-1.5,2)
-        glScale(self.tile,self.tile,self.tile)
+        glTranslate(self.solx-2,self.soly-1.5,0)#12)
+        glScale(0.4*self.tile,0.4*self.tile,0.4*self.tile)
 
         if self.drawSolProperly==False:
             #size box for edge/falling etc
@@ -158,8 +158,9 @@ class Solomon:
             #offset model
             #glTranslate(0,0.35,0)
             #scale down character
-            glScale(0.3,0.3,0.3)
-
+            #glScale(0.3,0.3,0.3)
+            pass
+            
         #rotate to direction sol_dir
         if self.sol_dir==-1: glRotatef(180,0,1,0)
 

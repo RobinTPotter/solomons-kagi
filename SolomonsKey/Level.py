@@ -105,12 +105,12 @@ class Level:
         #global X
         #glRotate(X,1,0,0)
 
-        glPushMatrix()
-        glTranslate(8,6.5,-0.55)
-        glScale(15,12,0.1)
-        glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
-        glutSolidCube(1)
-        glPopMatrix()
+        #glPushMatrix()
+        #glTranslate(8,6.5,-0.55)
+        #glScale(15,12,0.1)
+        #glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
+        #glutSolidCube(1)
+        #glPopMatrix()
 
         rr=0
         for r in self.grid:
