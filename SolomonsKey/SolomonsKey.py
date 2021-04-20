@@ -256,7 +256,12 @@ class SolomonsKey(threading.Thread):
             
 
 
-        self.level.draw()   
+        self.level.draw()  
+        for b in self.level.bursts:
+            print("doing burst {}".format(b))
+            if b.draw():
+                print("burst complete {}".format(b))
+                self.level.bursts.remove(b)
         
         
         gogogo(self.level, self.solomon, self.keys)
@@ -323,9 +328,7 @@ class SolomonsKey(threading.Thread):
             if self.joystick.callback_down is not None: self.joystick.callback_down(c)
             #print(self.keys)
             if self.joystick.isFire(self.keys):
-                print("fiingign1")
                 Logic.event(self.keys,c,self.solomon)
-                print("fiingign2")
         except Exception as e:
             print(e)    
             pass

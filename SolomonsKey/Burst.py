@@ -8,7 +8,7 @@ import random
 
 class Burst:
     
-    def __init__(self,life=3,size=0.5,intensity=18,diminish=True,x=0,y=0,z=0,burst_colours=["gold","red","white","red","yellow"],delay=0,callback=None):
+    def __init__(self,life=5,size=0.5,intensity=18,diminish=True,x=0,y=0,z=0,burst_colours=["gold","red","white","red","yellow"],delay=0,callback=None):
         self.life=life
         self.x=x
         self.y=y
@@ -29,6 +29,7 @@ class Burst:
         glDisable(GL_LIGHTING)
         glPushMatrix()
         glTranslate(self.x,self.y,self.z)
+        glScale(10,10,10)
         
         for i in range(self.intensity):
             glLineWidth(5.0)
@@ -43,6 +44,7 @@ class Burst:
         glPopMatrix()
         glEnable(GL_LIGHTING)
         self.life-=1
+        #print("life {}".format(self.life))
         if self.diminish: self.size-=0.1
         if self.life==0:
             if self.callback!=None: self.callback()

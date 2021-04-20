@@ -1,6 +1,6 @@
 from math import floor
 from Joystick import Joystick
-
+from Burst import Burst
 
 # created this for the react to the press down of fire
 def event(_keys,key,solomon):
@@ -110,6 +110,8 @@ def gogogo(level, solomon, _keys):
     if solomon.sol_wand!=0:
         solomon.sol_wand -= 1
         if (solomon.sol_wand==0):
+            level.bursts.append(Burst(x=solomon.solx+solomon.sol_dir*6,y=solomon.soly-solomon.sol_crouch*5,z=10))
+            #print(level.bursts)
             #print('wand!', solomon.sol_tile_dist_left_head(level.grid), solomon.sol_tile_dist_right_head(level.grid))
             block = solomon.sol_block(level.grid)
             ## print(block)
