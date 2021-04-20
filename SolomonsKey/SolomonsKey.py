@@ -17,6 +17,8 @@ from Solomon import Solomon
 from Burst import Burst
 from Logic import gogogo
 
+import Logic
+
 import threading
 
 name = "solomon\'s key"
@@ -90,7 +92,7 @@ class SolomonsKey(threading.Thread):
         self.cam_focus_target = XYZ(self.solomon.solx+0.2*self.solomon.sol_dir,self.solomon.soly-0.5,3.5)
 
         # set camera target position
-        self.cam_pos_target = XYZ(self.solomon.solx+1*self.solomon.sol_dir, self.solomon.soly-0.2,float(self.level.target_z))
+        self.cam_pos_target = XYZ(self.solomon.solx, self.solomon.soly, float(self.level.target_z)) #XYZ(self.solomon.solx+1*self.solomon.sol_dir, self.solomon.soly-0.2,float(self.level.target_z))
 
         # calculate current focal point and camera position
         # self.camera_sweep is the "speed" at which transitions are being made
@@ -137,22 +139,22 @@ class SolomonsKey(threading.Thread):
         glEnable(GL_NORMALIZE)
 
         print ("set light 1")
-        lightZeroPosition = [0,0,1,1]
+        lightZeroPosition = [0,0,00,1]
         glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-        lightZeroColor = [1.0,1.0,1.0,1.0] #green tinged
+        lightZeroColor = [0.2,0.2,0.2,0.5] #green tinged
         glEnable(GL_LIGHT0)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
-        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.2)
-        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.025)
+        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0025)
         
-        print ("set light 2")
-        lightZeroPosition2 = [1,0,0]
-        glLightfv(GL_LIGHT1, GL_POSITION, lightZeroPosition2)
-        lightZeroColor2 = [1.0,0.9,0.9,1.0] #green tinged
-        glEnable(GL_LIGHT1)
-        glLightfv(GL_LIGHT1, GL_DIFFUSE, lightZeroColor2)
-        glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.2)
-        glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
+        #print ("set light 2")
+        #lightZeroPosition2 = [0,1,0]
+        #glLightfv(GL_LIGHT1, GL_POSITION, lightZeroPosition2)
+        #lightZeroColor2 = [1,1,1,1.0] #green tinged
+        #glEnable(GL_LIGHT1)
+        #glLightfv(GL_LIGHT1, GL_DIFFUSE, lightZeroColor2)
+        #glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 0.2)
+        #glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
         
         #print ("set light 3")
         ##self.key_light.z=5
@@ -225,6 +227,34 @@ class SolomonsKey(threading.Thread):
 
         glScale(0.9,0.9,0.9)
 
+        if False:
+            
+            xx=(self.thing%100)/100
+            print ("set light 2 {}".format(xx))
+            #glDisable(GL_LIGHT1)
+            lightZeroPosition2 = [0,-1,0]
+            glLightfv(GL_LIGHT1, GL_POSITION, lightZeroPosition2)
+            lightZeroColor2 = [1,1,1,1.0] #green tinged
+            #glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, xx*xx)
+            #glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, xx*xx)
+            glLightfv(GL_LIGHT1, GL_DIFFUSE, lightZeroColor2)
+            #glEnable(GL_LIGHT1)
+            
+        if False:
+            if self.thing%100>50:
+                glEnable(GL_LIGHT1)
+                pass
+            else:
+                glDisable(GL_LIGHT1)
+            
+            
+            if self.thing%50>25:
+                glEnable(GL_LIGHT0)
+                pass
+            else:
+                glDisable(GL_LIGHT0)
+            
+
 
         self.level.draw()   
         
@@ -239,30 +269,10 @@ class SolomonsKey(threading.Thread):
         if self.solomon.sol_walking==1: self.solomon.AG_walk.do()  
 
         self.thing +=1
-        
-        
-        ##if self.thing%100>50:
-        ##    #glEnable(GL_LIGHT1)
-        ##    pass
-        ##else:
-        ##    glDisable(GL_LIGHT1)
-        ##
-        ##
-        ##if self.thing%20>10:
-        ##    glEnable(GL_LIGHT2)
-        ##else:
-        ##    glDisable(GL_LIGHT2)
-        ##
-        ##
-        ##if self.thing%50>25:
-        ##    #glEnable(GL_LIGHT0)
-        ##    pass
-        ##else:
-        ##    glDisable(GL_LIGHT0)
-        
+        ###glDisable(GL_LIGHT0)
 
         #if debug==True:
-        if True:
+        if False:
             glLoadIdentity()
             gluLookAt(0, -0.5, 2.5,
                       0, 0, 0  ,
@@ -310,7 +320,12 @@ class SolomonsKey(threading.Thread):
         #print ("*******************************************************************************")
         try:
             self.keys[c]=True
+            if self.joystick.callback_down is not None: self.joystick.callback_down(c)
             #print(self.keys)
+            if self.joystick.isFire(self.keys):
+                print("fiingign1")
+                Logic.event(self.keys,c,self.solomon)
+                print("fiingign2")
         except Exception as e:
             print(e)    
             pass
@@ -320,6 +335,7 @@ class SolomonsKey(threading.Thread):
     def keyupevent(self,c,x,y):
         try:
             if c in self.keys: self.keys[c]=False
+            if self.joystick.callback_up is not None: self.joystick.callback_up(c)
             #print(self.keys)
         except Exception as e:
             print(e)    

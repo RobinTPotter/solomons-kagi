@@ -2,6 +2,13 @@ from math import floor
 from Joystick import Joystick
 
 
+# created this for the react to the press down of fire
+def event(_keys,key,solomon):
+    keys = Joystick()
+    if (keys.isFire(_keys)):
+            solomon.sol_wand = solomon.sol_wand_limit
+            print("ding")
+    
 
 def gogogo(level, solomon, _keys):
     
@@ -100,12 +107,7 @@ def gogogo(level, solomon, _keys):
         solomon.soly-=solomon.sol_fall_inc
         solomon.sol_crouch = 0 #///decativate crouch
     
-
-    if (solomon.sol_wand==0):
-        if (keys.isFire(_keys)):
-            solomon.sol_wand = solomon.sol_wand_limit
-    
-    else:
+    if solomon.sol_wand!=0:
         solomon.sol_wand -= 1
         if (solomon.sol_wand==0):
             #print('wand!', solomon.sol_tile_dist_left_head(level.grid), solomon.sol_tile_dist_right_head(level.grid))

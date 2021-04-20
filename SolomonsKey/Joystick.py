@@ -2,7 +2,9 @@ class Joystick:
     
     up,down,left,right,fire="","","","",""
     keys_last = None
-
+    callback_up=None
+    callback_down=None
+    
     def __init__(self,up=b'q',down=b'a',left=b'o',right=b'p',fire=b'm'):
         self.up=up
         self.down=down
@@ -31,8 +33,9 @@ class Joystick:
         else: return False
          
     def isFire(self,keys):
-        self.keys_last=keys
-        if self.fire in keys: return keys[self.fire]
+        self.keys_last=keys        
+        if self.fire in keys:
+            return keys[self.fire]
         else: return False
         
     def __repr__(self):

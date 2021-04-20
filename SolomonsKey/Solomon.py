@@ -136,7 +136,7 @@ class Solomon:
     def draw(self):
 
         glTranslate(self.solx-2,self.soly-1.5,0)#12)
-        glScale(0.4*self.tile,0.4*self.tile,0.4*self.tile)
+        glScale(0.35*self.tile,0.35*self.tile,0.35*self.tile)
 
         if self.drawSolProperly==False:
             #size box for edge/falling etc
